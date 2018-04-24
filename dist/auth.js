@@ -9,14 +9,19 @@ class AuthHandler {
   _requestPromise(request, data) {
     return new Promise((resolve, reject) => {
       // stiringifiying undefined => undefined
-      console.log('making a request');
       request.send(JSON.stringify(data));
       request.onreadystatechange = function () {
         if (request.readyState === 4) {
-          resolve(request);
+          if (request.status >= 200 && request.status < 300) {
+            resolve(request);
+          } else {
+            let err = new Error(request.statusText || 'Unsuccessful Xhr response');
+            err.request = request;
+            console.log(request);
+            reject(err);
+          }
         }
       };
-      // TODO reject on error
     });
   }
 

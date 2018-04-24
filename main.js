@@ -20,12 +20,10 @@ window.onload = () => { // Set up the click listeners
     const password = document.getElementById('password').value;
     auth.login(username, password)
       .then(request => {
-        if (request.responseText) {
-          // Show the response somewhere...
-          showResults('response:', request.responseText);
-        } else {
-          showResults('no response', request);
-        }
+        showResults('response:', request.responseText);
+      })
+      .catch(err => {
+        showResults('no response', err.request);
       });
   };
 
@@ -34,8 +32,11 @@ window.onload = () => { // Set up the click listeners
     auth.serverUrl = url;
     // Try to login without a username and get the response
     auth.checkLogin()
-      .then(req => {
-        showResults('Logged in?', req.status < 400);
+      .then(_ => {
+        showResults('Logged in?', true);
+      })
+      .catch(_ => {
+        showResults('Logged in?', false);
       });
   };
 
