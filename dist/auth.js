@@ -1,6 +1,11 @@
 'use strict';
 /* global hex_sha512 */
 
+/* NetsBlox client authentication library
+ * Find the latest version in the github repo:
+ * https://github.com/NetsBlox/client-auth
+ */
+
 class AuthHandler {
   constructor(serverUrl) {
     this.serverUrl = serverUrl;
