@@ -8,7 +8,7 @@ class AuthHandler {
 
   _requestPromise(request, data) {
     return new Promise((resolve, reject) => {
-      // stiringifiying undefined => undefined
+      // stringifying undefined => undefined
       request.send(JSON.stringify(data));
       request.onreadystatechange = function () {
         if (request.readyState === 4) {
@@ -17,7 +17,6 @@ class AuthHandler {
           } else {
             let err = new Error(request.statusText || 'Unsuccessful Xhr response');
             err.request = request;
-            console.log(request);
             reject(err);
           }
         }
