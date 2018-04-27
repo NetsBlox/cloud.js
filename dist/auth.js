@@ -8,6 +8,7 @@
 
 class AuthHandler {
   constructor(serverUrl) {
+    if (serverUrl.endsWith('/')) serverUrl = serverUrl.substr(0, serverUrl.length-1);
     this.serverUrl = serverUrl;
   }
 
