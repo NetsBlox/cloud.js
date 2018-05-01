@@ -15,6 +15,12 @@ class AuthHandler {
   _requestPromise(request, data) {
     return new Promise((resolve, reject) => {
       // stringifying undefined => undefined
+      if (data) {
+        request.setRequestHeader(
+          'Content-Type',
+          'application/json; charset=utf-8'
+        );
+      }
       request.send(JSON.stringify(data));
       request.onreadystatechange = function () {
         if (request.readyState === 4) {
@@ -33,10 +39,6 @@ class AuthHandler {
   login(username, password) {
     const request = new XMLHttpRequest();
     request.open('POST', `${this.serverUrl}/api`, true);
-    request.setRequestHeader(
-      'Content-Type',
-      'application/json; charset=utf-8'
-    );
     request.withCredentials = true;
     const data = {
       __u: username,
@@ -57,5 +59,22 @@ class AuthHandler {
     request.open('POST', `${this.serverUrl}/api`, true);
     request.withCredentials = true;
     return this._requestPromise(request);
+  }
+
+  // gets user info: username, email
+  getProfile() {
+    const request = new XMLHttpRequest();
+    request.open('POST', `${this.serverUrl}/api`, true);
+    request.withCredentials = true;
+    const data = {
+      api: false,
+      return_user: true,
+      silent: true
+    };
+    return this._requestPromise(request, data)
+      .then(res => {
+        let user = JSON.parse(res.responseText);
+        return user;
+      });
   }
 }
