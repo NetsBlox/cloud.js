@@ -73,6 +73,7 @@ class AuthHandler {
     };
     return this._requestPromise(request, data)
       .then(res => {
+        if (!res.responseText) throw new Error('Access denied. You are not logged in.');
         let user = JSON.parse(res.responseText);
         return user;
       });

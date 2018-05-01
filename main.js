@@ -2,8 +2,6 @@
 /* global AuthHandler */
 
 function showResults(title, content) {
-  console.log('title', title);
-  console.log('content', content);
   document.getElementById('result-title').innerText = title;
   document.getElementById('result-content').innerText = content;
 }
@@ -23,7 +21,7 @@ window.onload = () => { // Set up the click listeners
         showResults('response:', request.responseText);
       })
       .catch(err => {
-        showResults('no response', err.request);
+        showResults('response', err.request.responseText);
       });
   };
 
@@ -31,11 +29,11 @@ window.onload = () => { // Set up the click listeners
     const url = document.getElementById('url').value;
     auth.serverUrl = url;
     // Try to login without a username and get the response
-    auth.checkLogin()
-      .then(_ => {
-        showResults('Logged in?', true);
+    auth.getProfile()
+      .then(user => {
+        showResults('logged in user:', JSON.stringify(user));
       })
-      .catch(_ => {
+      .catch(() => {
         showResults('Logged in?', false);
       });
   };
