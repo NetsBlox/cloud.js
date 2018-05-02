@@ -54,6 +54,18 @@ class AuthHandler {
     return this._requestPromise(request);
   }
 
+  register(username, email, password) {
+    const request = new XMLHttpRequest();
+    request.open('POST', `${this.serverUrl}/api/SignUp`, true);
+    request.withCredentials = true;
+    const data = {
+      Username: username,
+      Password: hex_sha512(password),
+      Email: email
+    };
+    return this._requestPromise(request, data);
+  }
+
   checkLogin() {
     const request = new XMLHttpRequest();
     request.open('POST', `${this.serverUrl}/api`, true);
