@@ -61,6 +61,19 @@ var AuthHandler = function () {
       return this._requestPromise(request);
     }
   }, {
+    key: 'register',
+    value: function register(username, email, password) {
+      var request = new XMLHttpRequest();
+      request.open('POST', this.serverUrl + '/api/SignUp', true);
+      request.withCredentials = true;
+      var data = {
+        Username: username,
+        Password: hex_sha512(password),
+        Email: email
+      };
+      return this._requestPromise(request, data);
+    }
+  }, {
     key: 'checkLogin',
     value: function checkLogin() {
       var request = new XMLHttpRequest();
