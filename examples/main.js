@@ -1,5 +1,5 @@
 'use strict';
-/* global AuthHandler */
+/* global Cloud */
 
 function showResults(title, content) {
   document.getElementById('result-title').innerText = title;
@@ -7,29 +7,29 @@ function showResults(title, content) {
 }
 
 window.onload = () => { // Set up the click listeners
-  const auth = new AuthHandler('NOURL');
+  let client = new Cloud(document.getElementById('url').value);
   const loginBtn = document.getElementById('login-btn');
   const logoutBtn = document.getElementById('logout-btn');
   const testBtn = document.getElementById('test-btn');
   loginBtn.onclick = () => {
     const url = document.getElementById('url').value;
-    auth.serverUrl = url;
+    client = new Cloud(url);
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
-    auth.login(username, password)
-      .then(request => {
-        showResults('response:', request.responseText);
+    client.login(username, password)
+      .then(username => {
+        showResults('response:', username);
       })
       .catch(err => {
-        showResults('response', err.request.responseText);
+        showResults('response', err);
       });
   };
 
   testBtn.onclick = () => {
     const url = document.getElementById('url').value;
-    auth.serverUrl = url;
+    client = new Cloud(url);
     // Try to login without a username and get the response
-    auth.getProfile()
+    client.getProfile()
       .then(user => {
         showResults('logged in user:', JSON.stringify(user));
       })
@@ -40,11 +40,11 @@ window.onload = () => { // Set up the click listeners
 
   logoutBtn.onclick = () => {
     const url = document.getElementById('url').value;
-    auth.serverUrl = url;
+    client = new Cloud(url);
 
-    auth.logout()
-      .then(request => {
-        showResults('response:', request.responseText);
+    client.logout()
+      .then(response => {
+        showResults('response:', response);
       });
   };
 };
