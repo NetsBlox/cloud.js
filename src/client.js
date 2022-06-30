@@ -2,7 +2,7 @@ require('isomorphic-fetch');
 const assert = require('assert');
 
 const defaultLocalizer = text => text;
-const isNodeJs = typeof module !== 'undefined';
+const isNodeJs = typeof window === 'undefined';
 
 class Cloud {
     constructor(url, clientId, username, localize=defaultLocalizer) {
