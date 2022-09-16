@@ -68,7 +68,7 @@ class Cloud {
     };
 
     async resetPassword(username) {
-        const response = await fetch(`/api/users/${username}/password`, {method: 'POST'});
+        const response = await this.fetch(`/api/users/${username}/password`, {method: 'POST'});
         return await response.text();
     };
 
@@ -112,8 +112,8 @@ class Cloud {
             username: this.username,
             password_hash: newPW,
         });
-        const response = await fetch(
-            `/api/users/${this.username}/password`,
+        const response = await this.fetch(
+            `/users/${this.username}/password`,
             {method: 'PATCH', body}
         );
         return await response.text();
@@ -238,7 +238,7 @@ class Cloud {
                 projectId: this.projectId,
             })
         };
-        const response = await fetch(`/api/collaboration-invites/${username}`, options);
+        const response = await this.fetch(`/collaboration-invites/${username}`, options);
         return await response.json();
     };
 
@@ -249,7 +249,7 @@ class Cloud {
                 response: accepted
             })
         };
-        const response = await fetch(`/api/collaboration-invites/${this.username}/${id}`, options);
+        const response = await this.fetch(`/collaboration-invites/${this.username}/${id}`, options);
         return await response.json();
     };
 
@@ -288,7 +288,7 @@ class Cloud {
     };
 
     async getProjectByName(owner, name) {
-        const response = await fetch(`/api/projects/user/${owner}/${name}`);
+        const response = await this.fetch(`/projects/user/${owner}/${name}`);
         // FIXME: This is returning an empty response sometimes
         const project = await response.json();
         this.setLocalState(project.ProjectID, project.RoleID);
@@ -314,8 +314,8 @@ class Cloud {
     async getCollaboratorList() {
         const [friends, collaborators] = Promise.all(
             [
-                fetch(`/api/friends/${this.username}/`),
-                fetch(`/api/projects/${this.projectId}/collaborators`)
+                this.fetch(`/friends/${this.username}/`),
+                this.fetch(`/projects/${this.projectId}/collaborators`)
             ]
             .map(responseP => responseP.then(response => response.json()))
         );
@@ -390,7 +390,7 @@ class Cloud {
             method: 'POST',
             body: xml,  // TODO: add options for allow rename?
         };
-        const saveResponse = await fetch(`/api/projects/`, options);
+        const saveResponse = await this.fetch(`/projects/`, options);
 
         // TODO: set the state with the network overlay
         //this.setLocalState(response.projectId, this.roleId);
