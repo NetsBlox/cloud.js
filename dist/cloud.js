@@ -2476,7 +2476,10 @@ class Cloud {
         }
         const response = await fetch(url, opts);
         if (response.status > 399) {
-            await this.onerror(response);
+            const text = await response.text();
+            const error = new CloudError(text);
+            await this.onerror(error);
+            throw error;
         }
         return response;
     }
@@ -2624,7 +2627,7 @@ class Cloud {
 
 class CloudError extends Error {
     constructor(label, message) {
-        super(message);
+        super(message || label);
         this.label = label;
     }
 }
