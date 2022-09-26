@@ -3,6 +3,12 @@ const assert = require('assert');
 
 const client = new CloudClient('http://localhost:7777');
 
+describe('localize', function() {
+	it('should have localize fn (default: identity)', function() {
+		assert.equal(client.localize('abc'), 'abc');
+	});
+});
+
 describe('login', function() {
 	it('should login on success', async function() {
 		const username = await client.login('test', 'password');

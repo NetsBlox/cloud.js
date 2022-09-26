@@ -2053,6 +2053,7 @@ class Cloud {
         this.roleId = null;
         this.url = url;
         this.token = null;  // only needed in NodeJs
+        this.localize = localize;
     }
 
     clear() {
