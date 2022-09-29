@@ -2416,10 +2416,12 @@ class Cloud {
 
     async signup(
         username,
+        password,
         email,
     ) {
         const body = {
             username,
+            password,
             email,
         };
         const response = await this.post('/users/create', body);
