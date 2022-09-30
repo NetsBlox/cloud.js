@@ -569,6 +569,11 @@ class Cloud {
         return await response.text();
     }
 
+    async getCommunityLibraryList() {
+        const response = await this.get('/libraries/community/');
+        return await response.json();
+    }
+
     async getLibraryList() {
         const response = await this.get(`/libraries/user/${this.username}/`);
         return await response.json();
@@ -583,20 +588,24 @@ class Cloud {
     }
 
     async getLibrary(username, name) {
+        name = encodeURIComponent(name);
         const response = await this.get(`/libraries/user/${username}/${name}`);
         return await response.text();
     }
 
     async deleteLibrary(name) {
+        name = encodeURIComponent(name);
         return await this.delete(`/libraries/user/${this.username}/${name}`);
     }
 
     async publishLibrary(name) {
+        name = encodeURIComponent(name);
         const response = await this.post(`/libraries/user/${this.username}/${name}/publish`);
         return await response.json();
     }
 
     async unpublishLibrary(name) {
+        name = encodeURIComponent(name);
         await this.post(`/libraries/user/${this.username}/${name}/unpublish`);
     }
 
