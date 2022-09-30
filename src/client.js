@@ -69,7 +69,7 @@ class Cloud {
     };
 
     async resetPassword(username) {
-        const response = await this.fetch(`/api/users/${username}/password`, {method: 'POST'});
+        const response = await this.fetch(`/users/${username}/password`, {method: 'POST'});
         return await response.text();
     };
 
@@ -422,6 +422,13 @@ class Cloud {
         return await this.fetch(url, opts);
     };
 
+    async delete(url) {
+        const opts = {
+            method: 'DELETE',
+        };
+        return await this.fetch(url, opts);
+    };
+
     async get(url) {
         const opts = {
             method: 'GET',
@@ -535,11 +542,11 @@ class Cloud {
     };
 
     async linkAccount(username, password, type) {
-        await this.request(`/api/v2/link/${this.username}/${type}`, {username, password});
+        await this.post(`/users/${this.username}/link/`, {Snap: {username, password}});
     };
 
     async unlinkAccount(account) {
-        await this.request(`/api/v2/unlink/${this.username}`, account);
+        await this.post(`/users/${this.username}/unlink/`, {username, strategy: 'snap'});
     };
 
     async getProjectData(projectId=this.projectId) {
@@ -560,6 +567,37 @@ class Cloud {
     async whoAmI() {
         const response = await this.get('/users/whoami');
         return await response.text();
+    }
+
+    async getLibraryList() {
+        const response = await this.get(`/libraries/user/${this.username}/`);
+        return await response.json();
+    }
+
+    async saveLibrary(name, blocks, notes) {
+        const library = {
+            name, notes, blocks
+        };
+        const response = await this.post(`/libraries/user/${this.username}/`, library);
+        return await response.json();
+    }
+
+    async getLibrary(username, name) {
+        const response = await this.get(`/libraries/user/${username}/${name}`);
+        return await response.text();
+    }
+
+    async deleteLibrary(name) {
+        return await this.delete(`/libraries/user/${this.username}/${name}`);
+    }
+
+    async publishLibrary(name) {
+        const response = await this.post(`/libraries/user/${this.username}/${name}/publish`);
+        return await response.json();
+    }
+
+    async unpublishLibrary(name) {
+        await this.post(`/libraries/user/${this.username}/${name}/unpublish`);
     }
 
     // Cloud: user messages (to be overridden)
