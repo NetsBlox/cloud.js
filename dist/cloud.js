@@ -2516,10 +2516,11 @@ class Cloud {
             const saveResponse = this.post(`/projects/`, {name, clientId: this.clientId});
             this.newProjectRequest = saveResponse
                 .then(response => response.json())
-                .then(async result => {
-                    this.setClientState(result.projectId, result.roleId);
+                .then(async metadata => {
+                    const [roleId] = Object.keys(metadata.roles);
+                    this.setClientState(metadata.id, roleId);
                     myself.newProjectRequest = null;
-                    return result;
+                    return metadata;
                 })
                 .catch(function(req) {
                     myself.resetLocalState();
