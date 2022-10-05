@@ -315,7 +315,7 @@ class Cloud {
     async getCollaboratorList() {
         const [friends, collaborators] = Promise.all(
             [
-                this.fetch(`/friends/${this.username}/`),
+                this.getFriendList(),
                 this.fetch(`/projects/${this.projectId}/collaborators`)
             ]
             .map(responseP => responseP.then(response => response.json()))
@@ -325,6 +325,15 @@ class Cloud {
             collaborating: collaborators.includes(username),
         }));
     };
+
+    async getFriendList() {
+        const response = await this.get(`/friends/${this.username}/`);
+        return response.json();
+    }
+
+    async sendFriendRequest(username) {
+        await this.post(`/friends/${this.username}/invite/`, username);
+    }
 
     async deleteRole(roleId) {
         const method = 'DELETE';
