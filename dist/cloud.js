@@ -2329,17 +2329,8 @@ class Cloud {
     };
 
     async getCollaboratorList() {
-        const [friends, collaborators] = await Promise.all(
-            [
-                this.getFriendList(),
-                this.fetch(`/projects/id/${this.projectId}/collaborators/`)
-                    .then(rsp => rsp.json())
-            ]
-        );
-        return friends.map(name => ({
-            name,
-            collaborating: collaborators.includes(name),
-        }));
+        const response = await this.get(`/projects/id/${this.projectId}/collaborators/`);
+        return await response.json();
     };
 
     async getFriendList() {
