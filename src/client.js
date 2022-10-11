@@ -231,42 +231,17 @@ class Cloud {
         await this.post(`/network/id/${this.projectId}/occupants/invite`, body);
     };
 
-    async inviteToCollaborate(username) {
-        const options = {
-            method: 'POST',
-            body: JSON.stringify({
-                sender: this.username,
-                projectId: this.projectId,
-            })
-        };
-        const response = await this.fetch(`/collaboration-invites/${username}`, options);
-        return await response.json();
+    async sendCollaborateRequest(username) {
+        await this.post(`/collaboration-invites/${this.projectId}/invite/${username}`);
     };
 
-    async respondToCollaborationInvite(id, accepted) {
-        const options = {
-            method: 'POST',
-            body: JSON.stringify({
-                response: accepted
-            })
-        };
-        const response = await this.fetch(`/collaboration-invites/${this.username}/${id}`, options);
-        return await response.json();
-    };
-
-    async addCollaborator(projectId, username) {
-        const response = await this.post(
-            `/collaboration-invites/${projectId}/invite/${username}`,
-            {username}
-        );
-        return await response.json();
+    async respondToCollaborateRequest(id, accepted) {
+        const newState = accepted ? 'ACCEPTED' : 'REJECTED';
+        await this.post(`/collaboration-invites/id/${id}`, newState);
     };
 
     async removeCollaborator(username, projectId) {
-        const options = {
-            method: 'DELETE',
-        };
-        await this.fetch(`/projects/id/${projectId}/collaborators/${username}`, options);
+        await this.delete(`/projects/id/${projectId}/collaborators/${username}`);
     };
 
     async getFriendList() {
@@ -331,8 +306,23 @@ class Cloud {
         return response.json();
     }
 
+    async getFriendRequestList() {
+        const response = await this.get(`/friends/${this.username}/invites/`);
+        return response.json();
+    }
+
     async sendFriendRequest(username) {
-        await this.post(`/friends/${this.username}/invite/`, username);
+        await this.post(`/friends/${this.username}/invite/`, username.trim());
+    }
+
+    async unfriend(username) {
+        username = encodeURIComponent(username.trim());
+        await this.post(`/friends/${this.username}/unfriend/${username}`);
+    }
+
+    async respondToFriendRequest(sender, newState) {
+        sender = encodeURIComponent(sender);
+        await this.post(`/friends/${this.username}/invites/${sender}`, newState);
     }
 
     async deleteRole(roleId) {
