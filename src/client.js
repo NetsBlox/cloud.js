@@ -231,6 +231,16 @@ class Cloud {
         await this.post(`/network/id/${this.projectId}/occupants/invite`, body);
     };
 
+    async getCollaboratorList() {
+        const response = await this.get(`/projects/id/${this.projectId}/collaborators/`);
+        return await response.json();
+    };
+
+    async getCollaboratorRequestList() {
+        const response = await this.get(`/collaboration-invites/user/${this.username}/`);
+        return await response.json();
+    }
+
     async sendCollaborateRequest(username) {
         await this.post(`/collaboration-invites/${this.projectId}/invite/${username}`);
     };
@@ -284,11 +294,6 @@ class Cloud {
 
     async getNetworkTrace(projectId, traceId) {
         const response = await this.fetch(`/network/id/${projectId}/trace/${traceId}`);
-        return await response.json();
-    };
-
-    async getCollaboratorList() {
-        const response = await this.get(`/projects/id/${this.projectId}/collaborators/`);
         return await response.json();
     };
 
