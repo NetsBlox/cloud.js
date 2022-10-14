@@ -2267,9 +2267,14 @@ class Cloud {
         const response = await this.post(`/projects/id/${projectId}/`, {name, code, media});
     };
 
-    async inviteOccupant(username, roleId) {
+    async sendOccupantInvite(username, roleId) {
         const body = {username, roleId};
         await this.post(`/network/id/${this.projectId}/occupants/invite`, body);
+    };
+
+    async evictOccupant(clientID) {
+        const method = 'DELETE';
+        await this.fetch(`/network/id/${this.projectdId}/occupants/${clientID}`, {method});
     };
 
     async getCollaboratorList() {
@@ -2295,8 +2300,13 @@ class Cloud {
         await this.delete(`/projects/id/${projectId}/collaborators/${username}`);
     };
 
+    async getOnlineFriendList() {
+        const response = await this.get(`/friends/${this.username}/online`);
+        return await response.json();
+    }
+
     async getFriendList() {
-        const response = await this.fetch(`/friends/${this.username}/online`);
+        const response = await this.get(`/friends/${this.username}/`);
         return await response.json();
     };
 
@@ -2365,11 +2375,6 @@ class Cloud {
     async deleteRole(roleId) {
         const method = 'DELETE';
         await this.fetch(`/projects/id/${this.projectId}/${roleId}`, {method});
-    };
-
-    async evictUser(clientID) {
-        const method = 'DELETE';
-        await this.fetch(`/network/id/${this.projectdId}/occupants/${clientID}`, {method});
     };
 
     async deleteProject(projectId) {
