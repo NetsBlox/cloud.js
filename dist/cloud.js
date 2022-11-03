@@ -2311,7 +2311,8 @@ class Cloud {
     };
 
     async getRole(projectId, roleId) {
-        const response = await this.fetch(`/projects/id/${projectId}/${roleId}/latest`);
+        const qs = this.clientId ? `clientId=${this.clientId}` : '';
+        const response = await this.fetch(`/projects/id/${projectId}/${roleId}/latest?${qs}`);
         const project = await response.json();
         // TODO: Set the state here?
         this.setLocalState(projectId, roleId);
