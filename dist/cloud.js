@@ -2349,11 +2349,6 @@ class Cloud {
         return await response.json();
     };
 
-    async getFriendList() {
-        const response = await this.get(`/friends/${this.username}/`);
-        return response.json();
-    }
-
     async getFriendRequestList() {
         const response = await this.get(`/friends/${this.username}/invites/`);
         return response.json();
