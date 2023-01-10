@@ -2150,10 +2150,7 @@ class Cloud {
         oldPW,
         newPW,
     ) {
-        const body = JSON.stringify({
-            username: this.username,
-            password_hash: newPW,
-        });
+        const body = JSON.stringify(newPW);
         const response = await this.fetch(
             `/users/${this.username}/password`,
             {method: 'PATCH', body}
