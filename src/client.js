@@ -38,7 +38,7 @@ class Cloud {
             request.open(
                 "GET",
                 (this.hasProtocol() ? '' : 'http://')
-                    + this.url + 'RawPublic'
+                    + this.url + '/RawPublic'
                     + '?'
                     + id,
                 true
