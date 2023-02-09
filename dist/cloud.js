@@ -2065,50 +2065,6 @@ class Cloud {
         return this.url.toLowerCase().indexOf('http') === 0;
     }
 
-    async getPublicProject(
-        id,
-    ) {
-        // id is Username=username&projectName=projectname,
-        // where the values are url-component encoded
-        // callBack is a single argument function, errorCall take two args
-        // FIXME: update this to use fetch
-        const deferred = utils.defer();
-        const request = new XMLHttpRequest();
-
-        try {
-            request.open(
-                "GET",
-                (this.hasProtocol() ? '' : 'http://')
-                    + this.url + '/RawPublic'
-                    + '?'
-                    + id,
-                true
-            );
-            request.setRequestHeader(
-                "Content-Type",
-                "application/x-www-form-urlencoded"
-            );
-            request.withCredentials = true;
-            request.onreadystatechange = () => {
-                if (request.readyState === 4) {
-                    if (request.responseText) {
-                        if (request.responseText.indexOf('ERROR') === 0) {
-                            deferred.reject(new Error(request.responseText));
-                        } else {
-                            deferred.resolve(request.responseText);
-                        }
-                    } else {
-                        deferred.reject(new Error(this.localize('could not connect to:') + this.url));
-                    }
-                }
-            };
-            request.send(null);
-        } catch (err) {
-            deferred.reject(err);
-        }
-        return deferred.promise;
-    };
-
     async resetPassword(username) {
         const response = await this.fetch(`/users/${username}/password`, {method: 'POST'});
         return await response.text();
