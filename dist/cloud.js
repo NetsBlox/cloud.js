@@ -2280,11 +2280,12 @@ class Cloud {
 
     async getProjectByName(owner, name) {
         const response = await this.fetch(`/projects/user/${owner}/${name}`);
-        // FIXME: This is returning an empty response sometimes
-        const project = await response.json();
-        this.setLocalState(project.ProjectID, project.RoleID);
-        console.assert(project.ProjectID, 'Response does not have a project ID');
-        return project;
+        return await response.json();
+    };
+
+    async getProjectMetadataByName(owner, name) {
+        const response = await this.fetch(`/projects/user/${owner}/${name}/metadata`);
+        return await response.json();
     };
 
     async startNetworkTrace(projectId) {
