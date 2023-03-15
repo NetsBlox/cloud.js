@@ -1,4 +1,4 @@
-const CloudClient = require("../src/client");
+const CloudClient = require("..");
 const assert = require("assert");
 
 const client = new CloudClient("http://localhost:7777");

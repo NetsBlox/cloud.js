@@ -1,2 +1,2 @@
 require('isomorphic-fetch')
-module.exports = require('./dist/client');
+module.exports = require('./dist/client').default;
