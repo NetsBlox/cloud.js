@@ -1,11 +1,10 @@
 {
-  "name": "netsblox-client-auth",
+  "name": "netsblox-cloud-client",
   "version": "2.0.0",
-  "description": "netsblox JS client helpers",
+  "description": "JS client for the netsblox cloud",
   "main": "main.js",
   "scripts": {
-    "build-watch": "babel src --watch --presets babel-preset-es2015 --out-dir dist",
-    "build": "babel src --presets babel-preset-es2015 --out-dir dist && npx browserify src/client.js -o dist/cloud.js -s Cloud",
+    "build": "npx rollup -c rollup.config.mjs",
     "test": "npx mocha --recursive test",
     "postinstall": "babel src --presets babel-preset-es2015 --out-dir dist"
   },
@@ -21,6 +20,7 @@
   "homepage": "https://github.com/NetsBlox/client-auth#readme",
   "devDependencies": {
     "@rollup/plugin-commonjs": "^24.0.1",
+    "@rollup/plugin-json": "^6.0.0",
     "@rollup/plugin-node-resolve": "^15.0.1",
     "@rollup/plugin-typescript": "^11.0.0",
     "@types/isomorphic-fetch": "^0.0.36",
