@@ -418,9 +418,8 @@ export default class Cloud {
         return response;
     }
 
-    async onerror(response) {
-        const text = await response.text();
-        throw new CloudError(text);
+    async onerror(error) {
+        throw error;
     }
 
     setLocalState(projectId, roleId) {
