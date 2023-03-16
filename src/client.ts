@@ -1,10 +1,21 @@
-require('isomorphic-fetch');
-const assert = require('assert');
-
 const defaultLocalizer = text => text;
 const isNodeJs = typeof window === 'undefined';
 
-class Cloud {
+interface LinkedAccount {
+    username: string;
+    strategy: string;
+}
+
+export default class Cloud {
+    url: string;
+    clientId: string;
+    username: string;
+    projectId: string | null;
+    roleId: string | null;
+    newProjectRequest: Promise<any> | undefined;
+    localize: (text: string) => string;
+    token: string | null;
+
     constructor(url, clientId, username, localize=defaultLocalizer) {
         this.clientId = clientId;
         this.username = username;
@@ -45,7 +56,8 @@ class Cloud {
         this.username = await response.text();
         if (isNodeJs) {
             const cookie = response.headers.get('set-cookie');
-            assert(cookie, new CloudError('No cookie received'));
+            if(!cookie) throw new CloudError('No cookie received');
+
             this.token = cookie.split('=')[1].split(';').shift();
         }
         return this.username;
@@ -186,7 +198,7 @@ class Cloud {
 
     async evictOccupant(clientID) {
         const method = 'DELETE';
-        await this.fetch(`/network/id/${this.projectdId}/occupants/${clientID}`, {method});
+        await this.fetch(`/network/id/${this.projectId}/occupants/${clientID}`, {method});
     };
 
     async getCollaboratorList() {
@@ -324,9 +336,9 @@ class Cloud {
     };
 
     async signup(
-        username,
-        password,
-        email,
+        username: string,
+        password: string,
+        email: string,
     ) {
         const body = {
             username,
@@ -352,8 +364,8 @@ class Cloud {
         return saveResponse.status == 200;
     };
 
-    async patch(url, body) {
-        const opts = {
+    async patch(url: string, body = undefined) {
+        const opts: RequestInit = {
             method: 'PATCH',
         };
         if (body !== undefined) {
@@ -362,8 +374,8 @@ class Cloud {
         return await this.fetch(url, opts);
     };
 
-    async post(url, body) {
-        const opts = {
+    async post(url, body=undefined) {
+        const opts: RequestInit = {
             method: 'POST',
         };
         if (body !== undefined) {
@@ -386,13 +398,15 @@ class Cloud {
         return await this.fetch(url, opts);
     };
 
-    async fetch(url, opts={}) {
+    async fetch(url, opts?: RequestInit) {
+        opts = opts || {};
         url = this.url + url;
         opts.credentials = opts.credentials || 'include';
-        opts.headers = opts.headers || {};
-        opts.headers['Content-Type'] = opts.headers['Content-Type'] || 'application/json';
+        opts.headers = {
+            'Content-Type': 'application/json'
+        };
         if (this.token) {
-            opts.headers.cookie = `netsblox=${this.token}`;
+            opts.headers['cookie'] = `netsblox=${this.token}`;
         }
         const response = await fetch(url, opts);
         if (response.status > 399) {
@@ -404,9 +418,8 @@ class Cloud {
         return response;
     }
 
-    async onerror(response) {
-        const text = await response.text();
-        throw new CloudError(text);
+    async onerror(error) {
+        throw error;
     }
 
     setLocalState(projectId, roleId) {
@@ -496,8 +509,8 @@ class Cloud {
         await this.post(`/users/${this.username}/link/`, {Snap: {username, password}});
     };
 
-    async unlinkAccount(account) {
-        await this.post(`/users/${this.username}/unlink/`, {username, strategy: 'snap'});
+    async unlinkAccount(account: LinkedAccount) {
+        await this.post(`/users/${this.username}/unlink/`, account);
     };
 
     async getProjectData(projectId=this.projectId) {
@@ -566,9 +579,15 @@ class Cloud {
         alert(string);
     }
 
-    // TODO: legacy api used by other sites using NetsBlox authentication
-    async register() {
-        return this.signup(...arguments);
+    // legacy api used by other sites using NetsBlox authentication
+    async register(
+        username: string,
+        email: string,
+    ) {
+        return this.signup(
+        username,
+        undefined,
+        email);
     }
 
     async checkLogin() {
@@ -586,11 +605,11 @@ class Cloud {
     }
 }
 
-class CloudError extends Error {
-    constructor(label, message) {
+export class CloudError extends Error {
+    label: string;
+
+    constructor(label, message = undefined) {
         super(message || label);
         this.label = label;
     }
 }
-
-module.exports = Cloud;

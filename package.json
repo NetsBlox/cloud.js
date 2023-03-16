@@ -1,29 +1,29 @@
 {
-  "name": "netsblox-client-auth",
+  "name": "netsblox-cloud-client",
   "version": "2.0.0",
-  "description": "netsblox JS client helpers",
-  "main": "main.js",
+  "description": "JS client for the netsblox cloud",
+  "main": "index.js",
   "scripts": {
-    "build-watch": "babel src --watch --presets babel-preset-es2015 --out-dir dist",
-    "build": "babel src --presets babel-preset-es2015 --out-dir dist && npx browserify src/client.js -o dist/cloud.js -s Cloud",
-    "test": "npx mocha --recursive test",
-    "postinstall": "babel src --presets babel-preset-es2015 --out-dir dist"
+    "build": "npx rollup -c rollup.config.mjs",
+    "test": "npx mocha --recursive test"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/NetsBlox/client-auth.git"
+    "url": "git+https://github.com/NetsBlox/cloud.js.git"
   },
   "author": "Hamid Zare",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/NetsBlox/client-auth/issues"
+    "url": "https://github.com/NetsBlox/cloud.js/issues"
   },
-  "homepage": "https://github.com/NetsBlox/client-auth#readme",
+  "homepage": "https://github.com/NetsBlox/cloud.js#readme",
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-preset-es2015": "^6.24.1",
-    "browserify": "^17.0.0",
+    "@rollup/plugin-commonjs": "^24.0.1",
+    "@rollup/plugin-typescript": "^11.0.0",
+    "@types/isomorphic-fetch": "^0.0.36",
     "isomorphic-fetch": "^3.0.0",
-    "mocha": "^10.0.0"
+    "mocha": "^10.0.0",
+    "rollup": "^3.19.1",
+    "tslib": "^2.5.0"
   }
 }
