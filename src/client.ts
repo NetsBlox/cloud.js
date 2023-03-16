@@ -582,12 +582,11 @@ export default class Cloud {
     // legacy api used by other sites using NetsBlox authentication
     async register(
         username: string,
-        password: string,
         email: string,
     ) {
         return this.signup(
         username,
-        password,
+        undefined,
         email);
     }
 

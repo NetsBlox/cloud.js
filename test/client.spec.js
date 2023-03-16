@@ -47,7 +47,7 @@ describe("logout", function () {
 describe("register", function () {
   it("should create new user", async function () {
     client.clear();
-    await client.register("testUser", "testUser@netsblox.org");
+    await client.register("testuser", "testuser@netsblox.org");
   });
 });
 
