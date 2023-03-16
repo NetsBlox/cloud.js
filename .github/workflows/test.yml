@@ -21,7 +21,11 @@ jobs:
       with:
         node-version: v18.x
     - name: spin up cloud
+      id: startCloud
       run: docker-compose -f test/docker-compose.yml up -d
+    - name: Debug Cloud Start Failures
+      run: docker logs test-cloud-1
+      if: steps.startCloud.outcome == 'failure'
     - name: wait for cloud to listen
       uses: ifaxity/wait-on-action@v1
       with:
