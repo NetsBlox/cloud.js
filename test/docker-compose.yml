@@ -12,24 +12,6 @@ services:
         - mongo
         - minio
 
-  services:  # NetsBlox RPCs
-    restart: always
-    image: netsblox/services:latest
-    ports:
-        - "8081:8081"
-    environment:
-        - "NETSBLOX_CLOUD=http://cloud:7777"
-        - "NETSBLOX_CLOUD_ID=NetsBloxServices"
-        - "NETSBLOX_CLOUD_SECRET=f13d0e98-b3f9-433b-aca6-19090e5ee849"  # TODO: Put the output from "netsblox service-hosts authorize" here
-        - "PORT=8081"
-        - "MONGO_URI=mongodb://mongo:27017"
-        - "THE_CAT_API_KEY=live_yL38pOVfFAQFLVu0Pk9bu1R26Msm8cZc6nmckkeymTJ9F3zpjBrCZtVhiM3WD4Pm"
-# Uncomment the following 2 lines to use the local services code in the container (for development)
-    volumes:
-       - "${PWD}/services/src:/netsblox/src"
-    depends_on:
-        - cloud
-
   browser:  # Hosts the client files
     restart: always
     image: netsblox/browser:latest
