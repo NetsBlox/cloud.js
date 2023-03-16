@@ -31,7 +31,7 @@ jobs:
     - name: spin up cloud
       run: docker-compose -f test/docker-compose.yml up -d
     - name: wait for cloud to listen
-      uses: ifaxity/wait-on-action
+      uses: ifaxity/wait-on-action@v1
       with:
         resource: http://localhost:7777/configuration
     - run: npm ci
