@@ -30,7 +30,7 @@ jobs:
         resource: http://localhost:7777/configuration
         timeout: 30000 # 30 seconds
     - name: Debug Cloud Start Failures
-      run: docker ps && docker logs test-cloud-1
+      run: docker ps && docker logs test_cloud_1
       if: always() && (steps.startCloud.outcome == 'failure' || steps.waitForCloud.outcome == 'failure')
     - run: npm ci
     - run: npm run build
