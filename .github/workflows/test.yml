@@ -26,6 +26,7 @@ jobs:
       uses: ifaxity/wait-on-action@v1
       with:
         resource: http://localhost:7777/configuration
+        timeout: 30000 # 30 seconds
     - run: npm ci
     - run: npm run build
     - run: npm test
