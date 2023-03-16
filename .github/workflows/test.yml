@@ -13,14 +13,6 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    services:
-      netsblox_cloud:
-        image: netsblox/cloud:latest
-        ports:
-          - 7777:7777
-        depends_on:
-          - mongo
-          - minio
 
     steps:
     - uses: actions/checkout@v2
