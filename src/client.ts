@@ -605,7 +605,7 @@ export default class Cloud {
     }
 }
 
-export class CloudError extends Error {
+class CloudError extends Error {
     label: string;
 
     constructor(label, message = undefined) {

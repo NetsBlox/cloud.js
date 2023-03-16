@@ -13,7 +13,7 @@ export default [
       file: "dist/client.js",
       format: "umd",
       name: "Cloud",
-      exports: "named",
+      exports: "default",
     },
     plugins,
   },

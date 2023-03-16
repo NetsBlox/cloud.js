@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
-    typeof define === 'function' && define.amd ? define(['exports'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.Cloud = {}));
-})(this, (function (exports) { 'use strict';
+    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+    typeof define === 'function' && define.amd ? define(factory) :
+    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.Cloud = factory());
+})(this, (function () { 'use strict';
 
     const defaultLocalizer = text => text;
     const isNodeJs = typeof window === 'undefined';
@@ -542,9 +542,6 @@
         }
     }
 
-    exports.CloudError = CloudError;
-    exports.default = Cloud;
-
-    Object.defineProperty(exports, '__esModule', { value: true });
+    return Cloud;
 
 }));
