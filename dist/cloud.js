@@ -4,7 +4,7 @@
     (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.Cloud = factory());
 })(this, (function () { 'use strict';
 
-    const defaultLocalizer = text => text;
+    const defaultLocalizer = (text) => text;
     const isNodeJs = typeof window === 'undefined';
     class Cloud {
         constructor(url, clientId, username, localize = defaultLocalizer) {
@@ -368,7 +368,7 @@
             }
             const response = await fetch(url, opts);
             if (response.status > 399) {
-                const text = await response.text();
+                const text = (await response.text()) || `Could not connect to ${this.url}`;
                 const error = new CloudError(text);
                 await this.onerror(error);
                 throw error;
@@ -418,7 +418,7 @@
         }
         ;
         async setClientState(projectId = this.projectId, roleId = this.roleId) {
-            var myself = this, newProjectRequest = this.newProjectRequest || Promise.resolve();
+            var newProjectRequest = this.newProjectRequest || Promise.resolve();
             this.projectId = projectId;
             this.roleId = roleId;
             return newProjectRequest
@@ -433,10 +433,6 @@
                 };
                 await this.post(`/network/${this.clientId}/state`, body);
                 // Only change the project ID if no other moves/newProjects/etc have occurred
-            })
-                .catch(function (req) {
-                var connError = 'Could not connect to ' + myself.url;
-                throw new Error(req.responseText || connError);
             });
         }
         ;
