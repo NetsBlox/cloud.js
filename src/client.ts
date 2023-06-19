@@ -1,4 +1,4 @@
-const defaultLocalizer = text => text;
+const defaultLocalizer = (text: string) => text;
 const isNodeJs = typeof window === 'undefined';
 
 interface LinkedAccount {
@@ -410,7 +410,7 @@ export default class Cloud {
         }
         const response = await fetch(url, opts);
         if (response.status > 399) {
-            const text = await response.text();
+            const text = (await response.text()) || `Could not connect to ${this.url}`;
             const error = new CloudError(text);
             await this.onerror(error);
             throw error;
@@ -418,7 +418,7 @@ export default class Cloud {
         return response;
     }
 
-    async onerror(error) {
+    async onerror(error: Error) {
         throw error;
     }
 
@@ -481,10 +481,6 @@ export default class Cloud {
                 };
                 await this.post(`/network/${this.clientId}/state`, body);
                 // Only change the project ID if no other moves/newProjects/etc have occurred
-            })
-            .catch(function(req) {
-                var connError = 'Could not connect to ' + myself.url;
-                throw new Error(req.responseText || connError);
             });
     };
 
