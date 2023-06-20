@@ -5,7 +5,7 @@
 })(this, (function () { 'use strict';
 
     const defaultLocalizer = (text) => text;
-    const isNodeJs = typeof window === 'undefined';
+    const isNodeJs = typeof window === "undefined";
     class Cloud {
         constructor(url, clientId, username, localize = defaultLocalizer) {
             this.clientId = clientId;
@@ -20,29 +20,27 @@
             this.username = null;
             this.token = null;
         }
-        hasProtocol() {
-            return this.url.toLowerCase().indexOf('http') === 0;
-        }
         async resetPassword(username) {
-            const response = await this.fetch(`/users/${username}/password`, { method: 'POST' });
+            const response = await this.fetch(`/users/${username}/password`, {
+                method: "POST",
+            });
             return await response.text();
         }
-        ;
         async login(username, password, remember, // TODO: use this...
-        strategy = 'NetsBlox') {
+        strategy = "NetsBlox") {
             const credentials = {};
             credentials[strategy] = { username, password };
             const body = {
                 credentials,
                 clientId: this.clientId,
             };
-            const response = await this.post('/users/login', body);
+            const response = await this.post("/users/login", body);
             this.username = await response.text();
             if (isNodeJs) {
-                const cookie = response.headers.get('set-cookie');
+                const cookie = response.headers.get("set-cookie");
                 if (!cookie)
-                    throw new CloudError('No cookie received');
-                this.token = cookie.split('=')[1].split(';').shift();
+                    throw new CloudError("No cookie received");
+                this.token = cookie.split("=")[1].split(";").shift();
             }
             return this.username;
         }
@@ -56,14 +54,13 @@
         }
         async changePassword(oldPW, newPW) {
             const body = JSON.stringify(newPW);
-            const response = await this.fetch(`/users/${this.username}/password`, { method: 'PATCH', body });
+            const response = await this.fetch(`/users/${this.username}/password`, { method: "PATCH", body });
             return await response.text();
         }
         parseResponse(src) {
             var ans = [], lines;
-            if (!src) {
+            if (!src)
                 return ans;
-            }
             lines = src.split(" ");
             lines.forEach(function (service) {
                 var entries = service.split("&"), dict = {};
@@ -75,59 +72,53 @@
             });
             return ans;
         }
-        ;
         parseDict(src) {
             var dict = {};
-            if (!src) {
+            if (!src)
                 return dict;
-            }
             src.split("&").forEach(function (entry) {
                 var pair = entry.split("="), key = decodeURIComponent(pair[0]), val = decodeURIComponent(pair[1]);
                 dict[key] = val;
             });
             return dict;
         }
-        ;
         encodeDict(dict) {
-            var str = '', pair, key;
-            if (!dict) {
+            var str = "", pair, key;
+            if (!dict)
                 return null;
-            }
             for (key in dict) {
                 if (dict.hasOwnProperty(key)) {
-                    pair = encodeURIComponent(key)
-                        + '='
-                        + encodeURIComponent(dict[key]);
+                    pair = encodeURIComponent(key) +
+                        "=" +
+                        encodeURIComponent(dict[key]);
                     if (str.length > 0) {
-                        str += '&';
+                        str += "&";
                     }
                     str += pair;
                 }
             }
             return str;
         }
-        ;
         async getUserData() {
             const response = await this.fetch(`/users/${this.username}`);
             return await response.json();
         }
-        ;
         async addRole(name) {
-            await this.post(`/projects/id/${this.projectId}/`, { name });
+            await this.post(`/projects/id/${this.projectId}/`, {
+                name,
+            });
             // TODO: should I request the new project state, too?
             // I shouldn't have to since we should be subscribed to changes...
             //return await response.json();
         }
-        ;
         async saveRole(roleData) {
             const url = `/projects/id/${this.projectId}/${this.roleId}`;
             const options = {
-                method: 'POST',
+                method: "POST",
                 body: JSON.stringify(roleData),
             };
             await this.fetch(url, options);
         }
-        ;
         async renameRole(roleId, name) {
             const body = {
                 name,
@@ -137,7 +128,6 @@
             // TODO: error handling
             //return await response.json();
         }
-        ;
         async renameProject(name) {
             const body = {
                 name,
@@ -145,38 +135,41 @@
             };
             await this.patch(`/projects/id/${this.projectId}`, body);
         }
-        ;
         async reportLatestRole(id, data) {
             const clientId = this.clientId;
             const options = {
-                method: 'POST',
-                body: JSON.stringify({ id, data })
+                method: "POST",
+                body: JSON.stringify({ id, data }),
             };
             await this.fetch(`/projects/id/${this.projectId}/${this.roleId}/latest?clientId=${clientId}`, options);
         }
-        ;
         async cloneRole(roleId) {
             const projectId = this.projectId;
             const fetchRoleResponse = await this.fetch(`/projects/id/${projectId}/${roleId}/latest`);
             const { name, code, media } = await fetchRoleResponse.json();
-            await this.post(`/projects/id/${projectId}/`, { name, code, media });
+            await this.post(`/projects/id/${projectId}/`, {
+                name,
+                code,
+                media,
+            });
         }
-        ;
+        async getRoomState() {
+            await this.get(`/network/id/${this.projectId}`);
+        }
         async sendOccupantInvite(username, roleId) {
             const body = { username, roleId };
             await this.post(`/network/id/${this.projectId}/occupants/invite`, body);
         }
-        ;
         async evictOccupant(clientID) {
-            const method = 'DELETE';
-            await this.fetch(`/network/id/${this.projectId}/occupants/${clientID}`, { method });
+            const method = "DELETE";
+            await this.fetch(`/network/id/${this.projectId}/occupants/${clientID}`, {
+                method,
+            });
         }
-        ;
         async getCollaboratorList() {
             const response = await this.get(`/projects/id/${this.projectId}/collaborators/`);
             return await response.json();
         }
-        ;
         async getCollaboratorRequestList() {
             const response = await this.get(`/collaboration-invites/user/${this.username}/`);
             return await response.json();
@@ -184,16 +177,13 @@
         async sendCollaborateRequest(username) {
             await this.post(`/collaboration-invites/${this.projectId}/invite/${username}`);
         }
-        ;
         async respondToCollaborateRequest(id, accepted) {
-            const newState = accepted ? 'ACCEPTED' : 'REJECTED';
+            const newState = accepted ? "ACCEPTED" : "REJECTED";
             await this.post(`/collaboration-invites/id/${id}`, newState);
         }
-        ;
         async removeCollaborator(username, projectId) {
             await this.delete(`/projects/id/${projectId}/collaborators/${username}`);
         }
-        ;
         async getOnlineFriendList() {
             const response = await this.get(`/friends/${this.username}/online`);
             return await response.json();
@@ -202,47 +192,39 @@
             const response = await this.get(`/friends/${this.username}/`);
             return await response.json();
         }
-        ;
         async getRole(projectId, roleId) {
-            const qs = this.clientId ? `clientId=${this.clientId}` : '';
+            const qs = this.clientId ? `clientId=${this.clientId}` : "";
             const response = await this.fetch(`/projects/id/${projectId}/${roleId}/latest?${qs}`);
             const project = await response.json();
             // TODO: Set the state here?
             this.setLocalState(projectId, roleId);
             return project;
         }
-        ;
         async getProjectMetadata(projectId) {
             const response = await this.fetch(`/projects/id/${projectId}/metadata`);
             const project = await response.json();
             return project;
         }
-        ;
         async getProjectByName(owner, name) {
             const response = await this.fetch(`/projects/user/${owner}/${name}`);
             return await response.json();
         }
-        ;
         async getProjectMetadataByName(owner, name) {
             const response = await this.fetch(`/projects/user/${owner}/${name}/metadata`);
             return await response.json();
         }
-        ;
         async startNetworkTrace(projectId) {
             const response = await this.post(`/network/id/${projectId}/trace/`);
             return await response.text();
         }
-        ;
         async stopNetworkTrace(projectId, traceId) {
             const response = await this.post(`/network/id/${projectId}/trace/${traceId}/stop`);
             return await response.text();
         }
-        ;
         async getNetworkTrace(projectId, traceId) {
             const response = await this.fetch(`/network/id/${projectId}/trace/${traceId}`);
             return await response.json();
         }
-        ;
         async getFriendRequestList() {
             const response = await this.get(`/friends/${this.username}/invites/`);
             return response.json();
@@ -259,28 +241,24 @@
             await this.post(`/friends/${this.username}/invites/${sender}`, newState);
         }
         async deleteRole(roleId) {
-            const method = 'DELETE';
+            const method = "DELETE";
             await this.fetch(`/projects/id/${this.projectId}/${roleId}`, { method });
         }
-        ;
         async deleteProject(projectId) {
-            const method = 'DELETE';
+            const method = "DELETE";
             await this.fetch(`/projects/id/${projectId}`, { method });
         }
-        ;
         async publishProject(projectId) {
-            const method = 'POST';
+            const method = "POST";
             await this.fetch(`/projects/id/${projectId}/publish`, { method });
         }
-        ;
         async unpublishProject(projectId) {
-            const method = 'POST';
+            const method = "POST";
             await this.fetch(`/projects/id/${projectId}/unpublish`, { method });
         }
-        ;
         reconnect(callback, errorCall) {
             if (!this.username) {
-                this.message('You are not logged in');
+                this.message("You are not logged in");
                 return;
             }
             // need to set 'api' from setClientState
@@ -291,29 +269,26 @@
             }
             return promise;
         }
-        ;
         async logout() {
-            const method = 'POST';
-            await this.fetch('/users/logout', { method });
+            const method = "POST";
+            await this.fetch("/users/logout", { method });
             this.clear();
             return true;
         }
-        ;
         async signup(username, password, email) {
             const body = {
                 username,
                 password,
                 email,
             };
-            const response = await this.post('/users/create', body);
+            const response = await this.post("/users/create", body);
             return await response.text();
         }
-        ;
         async saveProjectCopy() {
             const response = await this.fetch(`/projects/${this.projectId}/latest`);
             const xml = await response.text();
             const options = {
-                method: 'POST',
+                method: "POST",
                 body: xml, // TODO: add options for allow rename?
             };
             const saveResponse = await this.fetch(`/projects/`, options);
@@ -321,54 +296,50 @@
             //this.setLocalState(response.projectId, this.roleId);
             return saveResponse.status == 200;
         }
-        ;
         async patch(url, body = undefined) {
             const opts = {
-                method: 'PATCH',
+                method: "PATCH",
             };
             if (body !== undefined) {
                 opts.body = JSON.stringify(body);
             }
             return await this.fetch(url, opts);
         }
-        ;
         async post(url, body = undefined) {
             const opts = {
-                method: 'POST',
+                method: "POST",
             };
             if (body !== undefined) {
                 opts.body = JSON.stringify(body);
             }
             return await this.fetch(url, opts);
         }
-        ;
         async delete(url) {
             const opts = {
-                method: 'DELETE',
+                method: "DELETE",
             };
             return await this.fetch(url, opts);
         }
-        ;
         async get(url) {
             const opts = {
-                method: 'GET',
+                method: "GET",
             };
             return await this.fetch(url, opts);
         }
-        ;
         async fetch(url, opts) {
             opts = opts || {};
             url = this.url + url;
-            opts.credentials = opts.credentials || 'include';
+            opts.credentials = opts.credentials || "include";
             opts.headers = {
-                'Content-Type': 'application/json'
+                "Content-Type": "application/json",
             };
             if (this.token) {
-                opts.headers['cookie'] = `netsblox=${this.token}`;
+                opts.headers["cookie"] = `netsblox=${this.token}`;
             }
             const response = await fetch(url, opts);
             if (response.status > 399) {
-                const text = (await response.text()) || `Could not connect to ${this.url}`;
+                const text = (await response.text()) ||
+                    `Could not connect to ${this.url}`;
                 const error = new CloudError(text);
                 await this.onerror(error);
                 throw error;
@@ -382,17 +353,18 @@
             this.projectId = projectId;
             this.roleId = roleId;
         }
-        ;
         resetLocalState() {
             this.setLocalState(null, null);
         }
-        ;
-        newProject(name = this.localize('untitled')) {
+        newProject(name = this.localize("untitled")) {
             var myself = this;
             if (!this.newProjectRequest) {
-                const saveResponse = this.post(`/projects/`, { name, clientId: this.clientId });
+                const saveResponse = this.post(`/projects/`, {
+                    name,
+                    clientId: this.clientId,
+                });
                 this.newProjectRequest = saveResponse
-                    .then(response => response.json())
+                    .then((response) => response.json())
                     .then(async (metadata) => {
                     const [roleId] = Object.keys(metadata.roles);
                     this.setClientState(metadata.id, roleId);
@@ -407,16 +379,14 @@
             }
             return this.newProjectRequest;
         }
-        ;
         getClientState() {
             return {
                 username: this.username,
                 clientId: this.clientId,
                 projectId: this.projectId,
-                roleId: this.roleId
+                roleId: this.roleId,
             };
         }
-        ;
         async setClientState(projectId = this.projectId, roleId = this.roleId) {
             var newProjectRequest = this.newProjectRequest || Promise.resolve();
             this.projectId = projectId;
@@ -428,56 +398,54 @@
                         browser: {
                             projectId: this.projectId,
                             roleId: this.roleId,
-                        }
-                    }
+                        },
+                    },
                 };
                 await this.post(`/network/${this.clientId}/state`, body);
                 // Only change the project ID if no other moves/newProjects/etc have occurred
             });
         }
-        ;
         setProjectName(name) {
             const newProjectRequest = this.newProjectRequest || Promise.resolve();
             return newProjectRequest
                 .then(async () => {
-                await this.patch(`/projects/id/${this.projectId}`, { name, clientId: this.clientId });
+                await this.patch(`/projects/id/${this.projectId}`, {
+                    name,
+                    clientId: this.clientId,
+                });
             });
         }
-        ;
         async importProject(projectData) {
             projectData.clientId = this.clientId;
-            const response = await this.post('/projects/', projectData);
+            const response = await this.post("/projects/", projectData);
             return await response.json();
         }
-        ;
         async linkAccount(username, password, type) {
-            await this.post(`/users/${this.username}/link/`, { Snap: { username, password } });
+            await this.post(`/users/${this.username}/link/`, {
+                Snap: { username, password },
+            });
         }
-        ;
         async unlinkAccount(account) {
             await this.post(`/users/${this.username}/unlink/`, account);
         }
-        ;
         async getProjectData(projectId = this.projectId) {
             const response = await this.fetch(`/projects/id/${projectId}/latest?clientId=${this.clientId}`);
             return await response.json();
         }
-        ;
         async exportRole(projectId = this.projectId, roleId = this.roleId) {
             const response = await this.fetch(`/projects/id/${projectId}/${roleId}/latest?clientId=${this.clientId}`);
             return await response.text();
         }
-        ;
         async viewUser(username = this.username) {
             const response = await this.fetch(`/users/${username}`);
             return await response.json();
         }
         async whoAmI() {
-            const response = await this.get('/users/whoami');
+            const response = await this.get("/users/whoami");
             return await response.text();
         }
         async getCommunityLibraryList() {
-            const response = await this.get('/libraries/community/');
+            const response = await this.get("/libraries/community/");
             return await response.json();
         }
         async getLibraryList() {
@@ -486,7 +454,9 @@
         }
         async saveLibrary(name, blocks, notes) {
             const library = {
-                name, notes, blocks
+                name,
+                notes,
+                blocks,
             };
             const response = await this.post(`/libraries/user/${this.username}/`, library);
             return await response.json();
@@ -529,6 +499,17 @@
         async getProfile() {
             const profile = await this.viewUser();
             return profile;
+        }
+        static async connect(url, localize) {
+            const opts = {
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            };
+            const response = await fetch(`${url}/configuration`, opts);
+            const { clientId, username } = await response.json();
+            return new Cloud(url, clientId, username, localize);
         }
     }
     class CloudError extends Error {
