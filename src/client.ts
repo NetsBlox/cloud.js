@@ -197,8 +197,7 @@ export default class Cloud {
     };
 
     async evictOccupant(clientID) {
-        const method = 'DELETE';
-        await this.fetch(`/network/id/${this.projectId}/occupants/${clientID}`, {method});
+        await this.post(`/network/clients/${clientID}/evict`);
     };
 
     async getCollaboratorList() {
