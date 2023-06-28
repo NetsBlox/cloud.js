@@ -44,9 +44,29 @@ describe("logout", function () {
   });
 });
 
+describe("saveRole", function () {
+  before(async () => {
+    await client.login("test", "password");
+    await client.newProject();
+  });
+
+  it("should return project metadata", async function () {
+    const role = {
+      name: "someName",
+      code: "<someCode>",
+      media: "<someMedia>",
+    };
+    const metadata = await client.saveRole(role);
+    // Check a few fields specific to project metadata
+    assert(metadata.id);
+    assert(metadata.name);
+    assert(metadata.owner);
+  });
+});
+
 describe("register", function () {
   it("should create new user", async function () {
-    client.clear();
+    const client = new CloudClient("http://localhost:7777");
     await client.register("testuser", "testuser@netsblox.org");
   });
 });
