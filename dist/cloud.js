@@ -6,6 +6,13 @@
 
     const defaultLocalizer = (text) => text;
     const isNodeJs = typeof window === 'undefined';
+    var PublishState;
+    (function (PublishState) {
+        PublishState["Private"] = "Private";
+        PublishState["Public"] = "Public";
+        PublishState["PendingApproval"] = "PendingApproval";
+        PublishState["ApprovalDenied"] = "ApprovalDenied";
+    })(PublishState || (PublishState = {}));
     class Cloud {
         constructor(url, clientId, username, localize = defaultLocalizer) {
             this.clientId = clientId;
@@ -125,7 +132,8 @@
                 method: 'POST',
                 body: JSON.stringify(roleData),
             };
-            await this.fetch(url, options);
+            const response = await this.fetch(url, options);
+            return await response.json();
         }
         ;
         async renameRole(roleId, name) {

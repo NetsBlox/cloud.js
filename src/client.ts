@@ -6,6 +6,33 @@ interface LinkedAccount {
     strategy: string;
 }
 
+enum PublishState {
+    Private = "Private",
+    Public = "Public",
+    PendingApproval = "PendingApproval",
+    ApprovalDenied = "ApprovalDenied",
+}
+
+interface ProjectMetadata {
+    id: string;
+    owner: string;
+    name: string;
+    state: PublishState;
+    collaborators: string[];
+    saveState: string;
+    roles: {[roleId: string]: RoleMetadata};
+}
+
+interface RoleMetadata {
+    name: string;
+}
+
+interface RoleData{
+    name: string;
+    code: string;
+    media: string;
+}
+
 export default class Cloud {
     url: string;
     clientId: string;
@@ -147,14 +174,15 @@ export default class Cloud {
         //return await response.json();
     };
 
-    async saveRole(roleData) {
+    async saveRole(roleData: RoleData): Promise<ProjectMetadata> {
 
         const url = `/projects/id/${this.projectId}/${this.roleId}`;
         const options = {
             method: 'POST',
             body: JSON.stringify(roleData),
         };
-        await this.fetch(url, options);
+        const response = await this.fetch(url, options);
+        return await response.json();
     };
 
     async renameRole(roleId, name) {
