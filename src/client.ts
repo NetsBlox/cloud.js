@@ -303,13 +303,13 @@ export default class Cloud {
     };
 
     async publishProject(projectId) {
-        const method = 'POST';
-        await this.fetch(`/projects/id/${projectId}/publish`, {method});
+        const response = await this.post(`/projects/id/${projectId}/publish`);
+        return response.json();
     };
 
     async unpublishProject(projectId) {
-        const method = 'POST';
-        await this.fetch(`/projects/id/${projectId}/unpublish`, {method});
+        const response = await this.post(`/projects/id/${projectId}/unpublish`);
+        return response.json();
     };
 
     reconnect(callback, errorCall) {

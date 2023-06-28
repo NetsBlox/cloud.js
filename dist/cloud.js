@@ -168,8 +168,7 @@
         }
         ;
         async evictOccupant(clientID) {
-            const method = 'DELETE';
-            await this.fetch(`/network/id/${this.projectId}/occupants/${clientID}`, { method });
+            await this.post(`/network/clients/${clientID}/evict`);
         }
         ;
         async getCollaboratorList() {
@@ -269,13 +268,13 @@
         }
         ;
         async publishProject(projectId) {
-            const method = 'POST';
-            await this.fetch(`/projects/id/${projectId}/publish`, { method });
+            const response = await this.post(`/projects/id/${projectId}/publish`);
+            return response.json();
         }
         ;
         async unpublishProject(projectId) {
-            const method = 'POST';
-            await this.fetch(`/projects/id/${projectId}/unpublish`, { method });
+            const response = await this.post(`/projects/id/${projectId}/unpublish`);
+            return response.json();
         }
         ;
         reconnect(callback, errorCall) {
