@@ -64,6 +64,21 @@ describe("saveRole", function () {
   });
 });
 
+describe("addRole", function () {
+  before(async () => {
+    await client.login("test", "password");
+    await client.newProject();
+  });
+
+  it("should return project metadata", async function () {
+    const metadata = await client.addRole("someName");
+    // Check a few fields specific to project metadata
+    assert(metadata.id);
+    assert(metadata.name);
+    assert(metadata.owner);
+  });
+});
+
 describe("register", function () {
   it("should create new user", async function () {
     const client = new CloudClient("http://localhost:7777");

@@ -169,14 +169,10 @@ export default class Cloud {
     return await response.json();
   }
 
-  async addRole(name) {
-    const response = await this.post(`/projects/id/${this.projectId}/`, {
-      name,
-    });
-    // TODO: should I request the new project state, too?
-    // I shouldn't have to since we should be subscribed to changes...
-    //return await response.json();
-  }
+  async addRole(name: string) {
+    const response = await this.post(`/projects/id/${this.projectId}/`, {name});
+    return await response.json();
+  };
 
   async saveRole(roleData: RoleData): Promise<ProjectMetadata> {
     const url = `/projects/id/${this.projectId}/${this.roleId}`;
