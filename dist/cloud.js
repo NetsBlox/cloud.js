@@ -114,13 +114,10 @@
             return await response.json();
         }
         async addRole(name) {
-            await this.post(`/projects/id/${this.projectId}/`, {
-                name,
-            });
-            // TODO: should I request the new project state, too?
-            // I shouldn't have to since we should be subscribed to changes...
-            //return await response.json();
+            const response = await this.post(`/projects/id/${this.projectId}/`, { name });
+            return await response.json();
         }
+        ;
         async saveRole(roleData) {
             const url = `/projects/id/${this.projectId}/${this.roleId}`;
             const options = {
