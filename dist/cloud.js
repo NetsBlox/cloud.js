@@ -45,7 +45,8 @@
                 clientId: this.clientId,
             };
             const response = await this.post("/users/login", body);
-            this.username = await response.text();
+            const user = await response.json();
+            this.username = user.username;
             if (isNodeJs) {
                 const cookie = response.headers.get("set-cookie");
                 if (!cookie)
@@ -176,8 +177,8 @@
             const response = await this.get(`/collaboration-invites/user/${this.username}/`);
             return await response.json();
         }
-        async sendCollaborateRequest(username) {
-            await this.post(`/collaboration-invites/${this.projectId}/invite/${username}`);
+        async sendCollaborateRequest(projectId, username) {
+            await this.post(`/collaboration-invites/${projectId}/invite/${username}`);
         }
         async respondToCollaborateRequest(id, accepted) {
             const newState = accepted ? "ACCEPTED" : "REJECTED";
