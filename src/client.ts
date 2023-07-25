@@ -253,9 +253,9 @@ export default class Cloud {
     return await response.json();
   }
 
-  async sendCollaborateRequest(username) {
+  async sendCollaborateRequest(projectId: string, username) {
     await this.post(
-      `/collaboration-invites/${this.projectId}/invite/${username}`,
+      `/collaboration-invites/${projectId}/invite/${username}`,
     );
   }
 
