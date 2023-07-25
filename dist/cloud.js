@@ -45,7 +45,8 @@
                 clientId: this.clientId,
             };
             const response = await this.post("/users/login", body);
-            this.username = await response.text();
+            const user = await response.json();
+            this.username = user.username;
             if (isNodeJs) {
                 const cookie = response.headers.get("set-cookie");
                 if (!cookie)
