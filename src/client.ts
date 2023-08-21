@@ -171,9 +171,11 @@ export default class Cloud {
   }
 
   async addRole(name: string) {
-    const response = await this.post(`/projects/id/${this.projectId}/`, {name});
+    const response = await this.post(`/projects/id/${this.projectId}/`, {
+      name,
+    });
     return await response.json();
-  };
+  }
 
   async saveRole(roleData: RoleData): Promise<ProjectMetadata> {
     const url = `/projects/id/${this.projectId}/${this.roleId}`;
@@ -261,7 +263,7 @@ export default class Cloud {
   }
 
   async respondToCollaborateRequest(id, accepted) {
-    const newState = accepted ? "ACCEPTED" : "REJECTED";
+    const newState = accepted ? "Accepted" : "Rejected";
     await this.post(`/collaboration-invites/id/${id}`, newState);
   }
 
