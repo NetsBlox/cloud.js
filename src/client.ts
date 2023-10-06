@@ -463,19 +463,26 @@ export default class Cloud {
     if (this.token) {
       opts.headers["cookie"] = `netsblox=${this.token}`;
     }
-    const response = await fetch(url, opts);
-    if (response.status > 399) {
-      const text = (await response.text()) ||
-        `Could not connect to ${this.url}`;
-      const error = new CloudError(text);
-      await this.onerror(error);
+
+    let response;
+    try {
+      response = await fetch(url, opts);
+    } catch (err) {
+      const error = new ConnectionRefusedError(url);
+      this.onerror(error);
+      throw error;
+    }
+
+    if (!response.ok) {
+      const error = await RequestError.from(response);
+      this.onerror(error);
       throw error;
     }
     return response;
   }
 
-  async onerror(error: Error) {
-    throw error;
+  onerror(err) {
+    console.error(err);
   }
 
   setLocalState(projectId, roleId) {
@@ -682,5 +689,19 @@ class CloudError extends Error {
   constructor(label, message = undefined) {
     super(message || label);
     this.label = label;
+  }
+}
+
+class RequestError extends Error {
+  static async from(response: Response): Promise<RequestError> {
+    const message = await response.text() || response.statusText ||
+      'An unknown error occurred. Please try again later.';
+    return new RequestError(message);
+  }
+}
+
+class ConnectionRefusedError extends RequestError {
+  constructor(url: string) {
+    super(`Unable to connect to ${url}`);
   }
 }
