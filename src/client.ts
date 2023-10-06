@@ -693,10 +693,14 @@ class CloudError extends Error {
 }
 
 class RequestError extends Error {
+  status?: number;
+
   static async from(response: Response): Promise<RequestError> {
     const message = await response.text() || response.statusText ||
       'An unknown error occurred. Please try again later.';
-    return new RequestError(message);
+    const error = new RequestError(message);
+    error.status = response.status;
+    return error;
   }
 }
 
