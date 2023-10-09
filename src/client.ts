@@ -6,6 +6,13 @@ interface LinkedAccount {
   strategy: string;
 }
 
+enum SaveState {
+  Created = "Created",
+  Saved = "Saved",
+  Transient = "Transient",
+  Broken = "Broken",
+}
+
 enum PublishState {
   Private = "Private",
   Public = "Public",
@@ -19,7 +26,7 @@ interface ProjectMetadata {
   name: string;
   state: PublishState;
   collaborators: string[];
-  saveState: string;
+  saveState: SaveState;
   roles: { [roleId: string]: RoleMetadata };
 }
 
@@ -405,18 +412,14 @@ export default class Cloud {
   }
 
   async saveProjectCopy() {
-    const response = await this.fetch(`/projects/${this.projectId}/latest`);
-    const xml = await response.text();
-    const options = {
-      method: "POST",
-      body: xml, // TODO: add options for allow rename?
+    const currentProject = await this.getProjectData(this.projectId);
+    const projectData = {
+      name: currentProject.name,
+      saveState: SaveState.Saved,
+      roles: Object.values(currentProject.roles),
     };
-    const saveResponse = await this.fetch(`/projects/`, options);
 
-    // TODO: set the state with the network overlay
-    //this.setLocalState(response.projectId, this.roleId);
-
-    return saveResponse.status == 200;
+    return await this.importProject(projectData);
   }
 
   async patch(url: string, body = undefined) {
@@ -562,7 +565,7 @@ export default class Cloud {
       });
   }
 
-  async importProject(projectData) {
+  async importProject(projectData): Promise<ProjectMetadata> {
     projectData.clientId = this.clientId;
 
     const response = await this.post("/projects/", projectData);
