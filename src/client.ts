@@ -412,8 +412,7 @@ export default class Cloud {
   }
 
   async saveProjectCopy() {
-    const response = await this.fetch(`/projects/id/${this.projectId}/latest`);
-    const currentProject = await response.json();
+    const currentProject = await this.getProjectData(this.projectId);
     const projectData = {
       name: currentProject.name,
       saveState: SaveState.Saved,
