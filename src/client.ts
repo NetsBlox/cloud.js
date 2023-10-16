@@ -306,7 +306,9 @@ export default class Cloud {
   }
 
   async getProjectByName(owner, name) {
-    const response = await this.fetch(`/projects/user/${owner}/${name}`);
+    const response = await this.fetch(
+      `/projects/user/${encodeURIComponent(owner)}/${encodeURIComponent(name)}`,
+    );
     return await response.json();
   }
 
