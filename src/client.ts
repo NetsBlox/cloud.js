@@ -194,7 +194,7 @@ export default class Cloud {
     return await response.json();
   }
 
-  async renameRole(roleId, name) {
+  async renameRole(roleId, name: string) {
     const body = {
       name,
       clientId: this.clientId,
@@ -207,7 +207,7 @@ export default class Cloud {
     //return await response.json();
   }
 
-  async renameProject(name) {
+  async renameProject(name: string) {
     const body = {
       name,
       clientId: this.clientId,
@@ -305,7 +305,7 @@ export default class Cloud {
     return project;
   }
 
-  async getProjectByName(owner, name) {
+  async getProjectByName(owner: string, name: string) {
     const response = await this.fetch(
       `/projects/user/${encodeURIComponent(owner)}/${encodeURIComponent(name)}`,
     );
@@ -704,7 +704,7 @@ class RequestError extends Error {
 
   static async from(response: Response): Promise<RequestError> {
     const message = await response.text() || response.statusText ||
-      'An unknown error occurred. Please try again later.';
+      "An unknown error occurred. Please try again later.";
     const error = new RequestError(message);
     error.status = response.status;
     return error;
