@@ -1,5 +1,7 @@
 const CloudClient = require("..");
 const assert = require("assert");
+const adminUser = "admin";
+const password = "somePassword";
 
 const client = new CloudClient("http://localhost:7777");
 
@@ -11,31 +13,31 @@ describe("localize", function () {
 
 describe("login", function () {
   it("should login on success", async function () {
-    const username = await client.login("test", "password");
-    assert.equal(username, "test");
+    const username = await client.login(adminUser, password);
+    assert.equal(username, adminUser);
   });
 
   it("should maintain state", async function () {
-    await client.login("test", "password");
+    await client.login(adminUser, password);
     const { username } = await client.viewUser();
-    assert.equal(username, "test");
+    assert.equal(username, adminUser);
   });
 
   it("should throw error on bad password", async function () {
     await assert.rejects(
-      client.login("test", "incorrectPassword"),
+      client.login(adminUser, "incorrectPassword"),
     );
   });
 
   it("should throw error on invalid URL", async function () {
     const client = new CloudClient("http://localhost:da7777");
-    await assert.rejects(client.login("test", "password"));
+    await assert.rejects(client.login(adminUser, password));
   });
 });
 
 describe("logout", function () {
   before(async () => {
-    await client.login("test", "password");
+    await client.login(adminUser, password);
   });
 
   it("should logout", async function () {
@@ -46,7 +48,7 @@ describe("logout", function () {
 
 describe("saveRole", function () {
   before(async () => {
-    await client.login("test", "password");
+    await client.login(adminUser, password);
     await client.newProject();
   });
 
@@ -66,7 +68,7 @@ describe("saveRole", function () {
 
 describe("addRole", function () {
   before(async () => {
-    await client.login("test", "password");
+    await client.login(adminUser, password);
     await client.newProject();
   });
 
@@ -79,6 +81,34 @@ describe("addRole", function () {
   });
 });
 
+describe("getProjectMetadataByName", function () {
+  const name = "some name  ";
+  before(async () => {
+    await client.login(adminUser, password);
+    await client.newProject();
+    await client.renameProject(name);
+  });
+
+  it("should support spaces in the name", async function () {
+    const metadata = await client.getProjectMetadataByName(adminUser, name);
+    assert.equal(metadata.name, name);
+  });
+});
+
+describe("getProjectByName", function () {
+  const name = "some name  ";
+  before(async () => {
+    await client.login(adminUser, password);
+    await client.newProject();
+    await client.renameProject(name);
+  });
+
+  it("should support spaces in the name", async function () {
+    const metadata = await client.getProjectByName(adminUser, name);
+    assert.equal(metadata.name, name);
+  });
+});
+
 describe("register", function () {
   it("should create new user", async function () {
     const client = new CloudClient("http://localhost:7777");
@@ -88,7 +118,7 @@ describe("register", function () {
 
 describe("checkLogin", function () {
   it("should report true when logged in", async function () {
-    const username = await client.login("test", "password");
+    const username = await client.login(adminUser, password);
     assert(await client.checkLogin());
   });
 
@@ -100,9 +130,9 @@ describe("checkLogin", function () {
 
 describe("getProfile", function () {
   it("should get the user profile", async function () {
-    const username = await client.login("test", "password");
+    const username = await client.login(adminUser, password);
     const profile = await client.getProfile();
-    assert.equal(profile.username, "test");
+    assert.equal(profile.username, adminUser);
     assert(profile.email);
   });
 });

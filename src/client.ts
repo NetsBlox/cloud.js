@@ -314,12 +314,14 @@ export default class Cloud {
 
   async getProjectMetadataByName(owner, name) {
     const response = await this.fetch(
-      `/projects/user/${owner}/${name}/metadata`,
+      `/projects/user/${encodeURIComponent(owner)}/${
+        encodeURIComponent(name)
+      }/metadata`,
     );
     return await response.json();
   }
 
-  async startNetworkTrace(projectId) {
+  async startNetworkTrace(projectId: string) {
     const response = await this.post(`/network/id/${projectId}/trace/`);
     return await response.text();
   }

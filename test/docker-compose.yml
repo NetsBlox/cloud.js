@@ -3,28 +3,14 @@ version: "3"
 services:
   cloud:  # Basic account management, network overlay, etc
     restart: always
-    image: netsblox/cloud:latest
-    volumes:
-        - ${PWD}/test/cloudConfig.toml:/config/default.toml
+    image: netsblox/cloud:nightly
+    environment:
+        - "RUN_MODE=local"
     ports:
         - "7777:7777"
     depends_on:
         - mongo
         - minio
-
-  browser:  # Hosts the client files
-    restart: always
-    image: netsblox/browser:latest
-    ports:
-        - "8080:8080"
-    environment:
-        - "CLOUD_URL=http://127.0.0.1:7777"
-        - "PORT=8080"
-# Uncomment the following 2 lines to use the local browser code in the container (for development)
-    volumes:
-       - "${PWD}/browser/src:/netsblox/src"
-    depends_on:
-        - cloud
 
   mongo:  # Database for users, groups, project metadata, etc
     restart: always
