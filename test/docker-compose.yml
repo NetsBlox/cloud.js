@@ -6,17 +6,16 @@ services:
     image: netsblox/cloud:nightly
     environment:
         - "RUN_MODE=local"
-    ports:
-        - "7777:7777"
+    network_mode: host
     depends_on:
         - mongo
         - minio
-    environment:
-        - "RUN_MODE=local"
 
   mongo:  # Database for users, groups, project metadata, etc
     restart: always
     image: mongo:5.0-focal
+    ports:
+        - "27017:27017"
     volumes:
         - mongodb_data:/data/db
 
