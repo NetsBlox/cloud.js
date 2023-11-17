@@ -3,7 +3,7 @@ const assert = require("assert");
 const adminUser = "admin";
 const password = "somePassword";
 
-const client = new CloudClient("http://localhost:7777");
+const client = new CloudClient("http://127.0.0.1:7777");
 
 describe("localize", function () {
   it("should have localize fn (default: identity)", function () {
@@ -111,7 +111,7 @@ describe("getProjectByName", function () {
 
 describe("register", function () {
   it("should create new user", async function () {
-    const client = new CloudClient("http://localhost:7777");
+    const client = new CloudClient("http://127.0.0.1:7777");
     await client.register("testuser", "testuser@netsblox.org");
   });
 });
