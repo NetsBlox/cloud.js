@@ -11,6 +11,8 @@ services:
     depends_on:
         - mongo
         - minio
+    environment:
+        - "RUN_MODE=local"
 
   mongo:  # Database for users, groups, project metadata, etc
     restart: always

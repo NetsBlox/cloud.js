@@ -207,12 +207,13 @@ export default class Cloud {
     //return await response.json();
   }
 
-  async renameProject(name: string) {
+  async renameProject(name: string): Promise<ProjectMetadata> {
     const body = {
       name,
       clientId: this.clientId,
     };
     const response = await this.patch(`/projects/id/${this.projectId}`, body);
+    return await response.json();
   }
 
   async reportLatestRole(id, data) {
