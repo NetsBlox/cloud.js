@@ -61,7 +61,6 @@ export default class NetsBloxApi {
   }
 
   async login(loginData: LoginRequest): Promise<User> {
-    // TODO: add a version of this where you can retrieve the cookie?
     return await this.post(`/users/login`, loginData);
   }
 
@@ -219,7 +218,7 @@ export default class NetsBloxApi {
   }
 
   ////////////////////////////// Projects //////////////////////////////
-  async createProject(data: CreateProjectData): Promise<ProjectMetadata[]> {
+  async createProject(data: CreateProjectData): Promise<ProjectMetadata> {
     const opts = {
       method: "post",
       body: JSON.stringify(data),
@@ -246,7 +245,8 @@ export default class NetsBloxApi {
   }
 
   async getProjectNamedXml(owner: string, name: string): Promise<string> {
-    return await this.fetchJson(`/projects/user/${owner}/${name}/xml`);
+    const response = await this.fetch(`/projects/user/${owner}/${name}/xml`);
+    return await response.text();
   }
 
   async getProjectNamedMetadata(
@@ -292,19 +292,20 @@ export default class NetsBloxApi {
   async getProjectXml(
     id: ProjectId,
   ): Promise<string> {
-    return await this.fetchJson(`/projects/id/${id}/xml`);
+    const response = await this.fetch(`/projects/id/${id}/xml`);
+    return await response.text();
   }
 
   async publishProject(
     id: ProjectId,
-  ): Promise<string> {
-    return await this.fetchJson(`/projects/id/${id}/publish`);
+  ): Promise<PublishState> {
+    return await this.post(`/projects/id/${id}/publish`);
   }
 
   async unpublishProject(
     id: ProjectId,
-  ): Promise<string> {
-    return await this.fetchJson(`/projects/id/${id}/unpublish`);
+  ): Promise<PublishState> {
+    return await this.post(`/projects/id/${id}/unpublish`);
   }
 
   async listPendingProjects(): Promise<ProjectMetadata[]> {
@@ -427,7 +428,10 @@ export default class NetsBloxApi {
     owner: string,
     data: CreateLibraryData,
   ): Promise<LibraryMetadata> {
-    return await this.post(`/libraries/user/${encodeURIComponent(owner)}/`);
+    return await this.post(
+      `/libraries/user/${encodeURIComponent(owner)}/`,
+      data,
+    );
   }
 
   async deleteUserLibrary(
@@ -601,7 +605,7 @@ export default class NetsBloxApi {
 
   async authorizedHost(
     host: AuthorizedServiceHost,
-  ): Promise<AuthorizedServiceHost[]> {
+  ): Promise<string> {
     return await this.post(`/services/hosts/authorized/`, host);
   }
 
