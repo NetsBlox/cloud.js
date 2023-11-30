@@ -8,12 +8,11 @@ const plugins = [
 
 export default [
   {
-    input: "src/client.ts",
+    input: "src/index.ts",
     output: {
-      file: "dist/client.js",
+      file: "dist/bundle.js",
       format: "umd",
-      name: "Cloud",
-      exports: "default",
+      name: "NetsBloxCloud",
     },
     plugins,
   },

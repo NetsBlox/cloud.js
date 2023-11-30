@@ -105,9 +105,8 @@ export default class Cloud {
     return await response.json();
   }
 
-  async getSharedProjectList() {
-    const response = await this.fetch(`/projects/shared/${this.username}`);
-    return await response.json();
+  async getSharedProjectList(): Promise<ProjectMetadata[]> {
+    return await this.api.getSharedProjectList(this.username);
   }
 
   async changePassword(
@@ -692,23 +691,5 @@ class CloudError extends Error {
   constructor(label, message = undefined) {
     super(message || label);
     this.label = label;
-  }
-}
-
-class RequestError extends Error {
-  status?: number;
-
-  static async from(response: Response): Promise<RequestError> {
-    const message = await response.text() || response.statusText ||
-      'An unknown error occurred. Please try again later.';
-    const error = new RequestError(message);
-    error.status = response.status;
-    return error;
-  }
-}
-
-class ConnectionRefusedError extends RequestError {
-  constructor(url: string) {
-    super(`Unable to connect to ${url}`);
   }
 }
