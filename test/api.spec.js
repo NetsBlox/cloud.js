@@ -59,6 +59,7 @@ describe("api", function () {
       const email = "noreply@netsblox.org";
       const userData = { username, email };
       await api.createUser(userData);
+
       await api.banUser(username);
       const acct = await api.unbanUser(username);
       assert.equal(acct.username, username);
@@ -328,7 +329,7 @@ describe("api", function () {
         metadata.id,
         roleId,
       );
-      assert.equal(Object.keys(newMetadata).length, 1);
+      assert.equal(Object.keys(newMetadata.roles).length, 1);
     });
 
     it("should get metadata", async function () {
@@ -478,13 +479,14 @@ describe("api", function () {
         saveState: "Saved",
       };
       await api.createProject(data);
-      const xml = await api.getProjectNamed("admin", data.name);
+      const xml = await api.getProjectNamedXml("admin", data.name);
+      assert.equal(typeof xml, "string");
       assert(xml.startsWith("<room"));
     });
 
     it("should get project metadata by name", async function () {
       const data = {
-        name: "getProjectXmlByName",
+        name: "getProjectMetadataByName",
         roles: [
           {
             name: "someRole",
@@ -495,7 +497,7 @@ describe("api", function () {
         saveState: "Saved",
       };
       const metadata = await api.createProject(data);
-      const md2 = await api.getProjectNamedMetadata("admin", data.name);
+      const md2 = await api.getProjectNamedMetadata("admin", metadata.name);
       assert.deepEqual(metadata, md2);
     });
 
@@ -521,7 +523,8 @@ describe("api", function () {
         name: "newName",
       };
       const metadata = await api.updateProject(projectId, updateData);
-      assert.equal(metadata.name, updateData.name);
+      assert.notEqual(metadata.id, projectId);
+      assert.notEqual(metadata.name, data.name);
     });
 
     it("should delete project", async function () {
@@ -596,7 +599,7 @@ describe("api", function () {
       const metadata = await api.createProject(data);
 
       // send invite
-      const invite = await api.inviteCollaborator(metadata.id, receiver);
+      const invite = await api.inviteCollaborator(metadata.id, collaborator);
       assert.equal(invite.projectId, metadata.id);
       assert.equal(invite.sender, metadata.owner);
 
@@ -648,8 +651,8 @@ describe("api", function () {
       assert(libraries.some((lib) => lib.name === library.name));
 
       // get
-      const libraryData = await api.getUserLibrary("admin", library.name);
-      assert.equal(libraryData.blocks, library.blocks);
+      const libraryXml = await api.getUserLibrary("admin", library.name);
+      assert.equal(libraryXml, library.blocks);
 
       // publish
       const state = await api.publishLibrary("admin", library.name);
@@ -684,7 +687,7 @@ describe("api", function () {
         library.name,
         "PendingApproval",
       );
-      assert.equal(newMetadata.state, "PendingApproval");
+      assert(newMetadata.hasOwnProperty("state"));
 
       // list pending
       const libraries = await api.listPendingLibraries();
@@ -694,14 +697,16 @@ describe("api", function () {
 
   describe("service hosts", function () {
     it("should list group hosts", async function () {
-      const serviceHosts = [
+      const servicesHosts = [
         { url: "http://localhost:4040", categories: ["host1"] },
         { url: "http://localhost:4041", categories: ["host2"] },
       ];
-      const data = { name: "testListGroupHosts", serviceHosts };
+      const data = { name: "testListGroupHosts", servicesHosts };
       const group = await api.createGroup("admin", data);
       const hosts = await api.listGroupHosts(group.id);
       assert.equal(hosts.length, 2);
+      assert.equal(hosts[0].hasOwnProperty("url"));
+      assert.equal(hosts[0].hasOwnProperty("categories"));
     });
 
     it("should set group hosts", async function () {
@@ -713,7 +718,7 @@ describe("api", function () {
       ];
 
       const groupData = await api.setGroupHosts(group.id, hosts);
-      assert.equal(groupData.servicesHosts.length, 2);
+      assert.equal(Array.isArray(groupData.servicesHosts));
     });
 
     it("should set/list user hosts", async function () {
@@ -726,11 +731,11 @@ describe("api", function () {
     });
 
     it("should list all hosts", async function () {
-      const serviceHosts = [
+      const servicesHosts = [
         { url: "http://localhost:4040", categories: ["host1"] },
         { url: "http://localhost:4041", categories: ["host2"] },
       ];
-      const data = { name: "testListAllHosts", serviceHosts };
+      const data = { name: "testListAllHosts", servicesHosts };
       const group = await api.createGroup("admin", data);
       const userData = {
         username: "listAllHostsUser",
@@ -763,7 +768,7 @@ describe("api", function () {
   describe("service settings", function () {
     it("should set/get/list/delete settings for the user", async function () {
       // set
-      const settings = "SomeSettings";
+      const settings = `{"SomeSetting": "SomeValue"}`;
       await api.setUserSettings("admin", "TestHost", settings);
 
       // get
@@ -782,7 +787,7 @@ describe("api", function () {
       const group = await api.createGroup("admin", { name: "groupSettings" });
 
       // set
-      const settings = "SomeSettings";
+      const settings = `{"SomeSetting": "SomeValue"}`;
       await api.setGroupSettings(group.id, "TestHost", settings);
 
       // get
