@@ -1,7 +1,7 @@
 const { NetsBloxApi } = require("..");
 const assert = require("assert/strict");
 
-const api = new NetsBloxApi("http://localhost:7777");
+const api = new NetsBloxApi("http://127.0.0.1:7777");
 
 describe("api", function () {
   beforeEach(async () => {
