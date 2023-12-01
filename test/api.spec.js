@@ -1,3 +1,10 @@
+/**
+ * Tests for the NetsBlox API.
+ *
+ * These are intended to be tests for the client wrapper - not integration tests.
+ * They do not check that the server did the correct thing; just that the client
+ * deserialized the correct response (ie, that the return type is correct)
+ */
 const { NetsBloxApi } = require("..");
 const assert = require("assert/strict");
 
@@ -392,10 +399,6 @@ describe("api", function () {
       assert.equal(newState, "Private");
     });
 
-    it("should list shared projects", async function () {
-      // TODO
-    });
-
     it("should list projects", async function () {
       const data = {
         name: "testListProjects",
@@ -446,15 +449,54 @@ describe("api", function () {
     });
 
     it("should get project by name", async function () {
-      // TODO
+      const data = {
+        name: "getProjectByName",
+        roles: [
+          {
+            name: "someRole",
+            code: "<code/>",
+            media: "<media/>",
+          },
+        ],
+        saveState: "Saved",
+      };
+      await api.createProject(data);
+      const project = await api.getProjectNamed("admin", data.name);
+      assert.equal(data.roles[0].code, Object.values(project.roles)[0].code);
     });
 
     it("should get project xml by name", async function () {
-      // TODO
+      const data = {
+        name: "getProjectXmlByName",
+        roles: [
+          {
+            name: "someRole",
+            code: "<code/>",
+            media: "<media/>",
+          },
+        ],
+        saveState: "Saved",
+      };
+      await api.createProject(data);
+      const xml = await api.getProjectNamed("admin", data.name);
+      assert(xml.startsWith("<room"));
     });
 
     it("should get project metadata by name", async function () {
-      // TODO
+      const data = {
+        name: "getProjectXmlByName",
+        roles: [
+          {
+            name: "someRole",
+            code: "<code/>",
+            media: "<media/>",
+          },
+        ],
+        saveState: "Saved",
+      };
+      const metadata = await api.createProject(data);
+      const md2 = await api.getProjectNamedMetadata("admin", data.name);
+      assert.deepEqual(metadata, md2);
     });
 
     it("should rename project", async function () {
@@ -504,10 +546,6 @@ describe("api", function () {
       assert.equal(metadata.id, projectId);
     });
 
-    it("should list pending projects", async function () {
-      // TODO
-    });
-
     it("should list pending projects; set project state", async function () {
       const data = {
         name: "setProjectState",
@@ -530,39 +568,72 @@ describe("api", function () {
       const metadata = await api.setProjectState(projectId, state);
       assert.equal(metadata.state, state);
 
-      const pendingProjects = await api.setProjectState(projectId, state);
+      const pendingProjects = await api.listPendingProjects();
       assert(pendingProjects.some((project) => project.id === projectId));
     });
   });
 
   describe("collaborators", function () {
-    it("should list invites", async function () {
-      // TODO
-    });
+    it("should send/list/respond to invite then list/remove collabs", async function () {
+      const collaborator = "testCollaborator";
+      await ensureUserExists(api, collaborator);
+      const data = {
+        name: "testCollabs",
+        roles: [
+          {
+            name: "someRole",
+            code: "<code/>",
+            media: "<media/>",
+          },
+          {
+            name: "role2",
+            code: "<code/>",
+            media: "<media/>",
+          },
+        ],
+        saveState: "Saved",
+      };
+      const metadata = await api.createProject(data);
 
-    it("should send invite", async function () {
-      // TODO
-    });
+      // send invite
+      const invite = await api.inviteCollaborator(metadata.id, receiver);
+      assert.equal(invite.projectId, metadata.id);
+      assert.equal(invite.sender, metadata.owner);
 
-    it("should respond to invite", async function () {
-      // TODO
-    });
+      // list invites
+      const invites = await api.listCollaborationInvites(collaborator);
+      assert.equal(invites.length, 1);
+      assert.equal(invites[0].sender, metadata.owner);
+      assert.equal(invites[0].receiver, collaborator);
 
-    it("should list collaborators", async function () {
-      // TODO
-    });
+      // respond to invite
+      const state = await api.respondToCollaborationInvite(
+        invite.id,
+        "Accepted",
+      );
+      assert.equal(state, "Accepted");
 
-    it("should remove collaborator", async function () {
-      // TODO
+      // list collabs
+      const collaborators = await api.listCollaborators(metadata.id);
+      assert.equal(collaborators.length, 1);
+      assert.equal(collaborators[0], collaborator);
+
+      // list shared projects
+      const sharedProjects = await api.listSharedProjects(collaborator);
+      assert(Array.isArray(sharedProjects));
+      assert.equal(sharedProjects[0].id, metadata.id);
+
+      // remove collaborator
+      const updatedMetadata = await api.removeCollaborator(
+        metadata.id,
+        collaborator,
+      );
+      assert.deepEqual(metadata, updatedMetadata);
     });
   });
 
   describe("libraries", function () {
-    it("should list community libraries", async function () {
-      // TODO
-    });
-
-    it("should save/list/get/publish/unpublish/delete user library", async function () {
+    it("should save/list/get/publish/list pub/unpublish/delete user library", async function () {
       const library = {
         name: "saveUserLib",
         blocks: "<blocks/>",
@@ -584,6 +655,11 @@ describe("api", function () {
       const state = await api.publishLibrary("admin", library.name);
       assert.equal(state, "Public");
 
+      // list community libraries
+      const communityLibs = await api.listCommunityLibraries();
+      assert(communityLibs[0].state, "Public");
+      assert(communityLibs[0].hasOwnProperty("notes"));
+
       // unpublish
       const newState = await api.unpublishLibrary("admin", library.name);
       assert.equal(newState, "Private");
@@ -594,12 +670,25 @@ describe("api", function () {
       assert.equal(newMetadata.state, "Private");
     });
 
-    it("should list pending libraries", async function () {
-      // TODO
-    });
+    it("should set library state/list pending libraries", async function () {
+      const library = {
+        name: "moderateLibraries",
+        blocks: "<blocks/>",
+        notes: "notes..",
+      };
+      await api.saveUserLibrary("admin", library);
 
-    it("should set library state", async function () {
-      // TODO
+      // set state
+      const newMetadata = await api.setLibraryState(
+        "admin",
+        library.name,
+        "PendingApproval",
+      );
+      assert.equal(newMetadata.state, "PendingApproval");
+
+      // list pending
+      const libraries = await api.listPendingLibraries();
+      assert.equal(libraries[0].state, "PendingApproval");
     });
   });
 

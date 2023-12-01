@@ -378,7 +378,7 @@ export default class NetsBloxApi {
     );
   }
 
-  async respondToCollaboration(
+  async respondToCollaborationInvite(
     id: string,
     state: InvitationState,
   ): Promise<InvitationState> {
@@ -393,7 +393,7 @@ export default class NetsBloxApi {
   async removeCollaborator(
     projectId: ProjectId,
     collaborator: string,
-  ): Promise<string[]> {
+  ): Promise<ProjectMetadata> {
     const opts = { method: "delete" };
     return await this.fetchJson(
       `/projects/id/${projectId}/collaborators/${collaborator}`,
