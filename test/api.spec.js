@@ -1,5 +1,5 @@
 const { NetsBloxApi } = require("..");
-const assert = require("assert");
+const assert = require("assert/strict");
 
 const api = new NetsBloxApi("http://localhost:7777");
 
@@ -79,62 +79,94 @@ describe("api", function () {
   });
 
   describe("friends", function () {
-    it("should list friends", async function () {
-      // TODO
+    it("should send/accept/list/unfriend friends", async function () {
+      const friend = "testFriend";
+      await ensureUserExists(api, friend);
+
+      // send
+      const linkState = await api.sendFriendInvite("admin", friend);
+      assert.equal(linkState, "Pending");
+
+      // list invites
+      const invites = await api.listFriendInvites(friend);
+      assert.equal(invites.length, 1);
+      assert.equal(invites[0].sender, "admin");
+
+      // accept
+      const link = await api.respondToFriendInvite(friend, "admin", "Approved");
+      assert.equal(link.state, "Approved");
+
+      // list
+      const friends = await api.listFriends(friend);
+      assert(friends.includes("admin"));
+
+      // unfriend
+      const success = await api.unfriend("admin", friend);
+      assert(success);
     });
 
-    it("should list online friends", async function () {
-      // TODO
-    });
+    it("should block/unblock users", async function () {
+      const friend = "testBlockUser";
+      await ensureUserExists(api, friend);
 
-    it("should unfriend", async function () {
-      // TODO
-    });
+      // block
+      const link = await api.block("admin", friend);
+      assert.equal(link.state, "Blocked");
 
-    it("should block users", async function () {
-      // TODO
-    });
-
-    it("should unblock users", async function () {
-      // TODO
-    });
-
-    it("should list friend invites", async function () {
-      // TODO
-    });
-
-    it("should send friend invite", async function () {
-      // TODO
-    });
-
-    it("should respond to friend invite", async function () {
-      // TODO
+      // unblock
+      const success = await api.unblock("admin", friend);
+      assert(success);
     });
   });
 
   describe("groups", function () {
-    it("should list groups", async function () {
-      // TODO
+    it("should create group", async function () {
+      const data = { name: "createGroup" };
+      const group = await api.createGroup("admin", data);
+      assert.equal(group.name, data.name);
     });
 
-    it("should create group", async function () {
-      // TODO
+    it("should list groups", async function () {
+      const data = { name: "listGroups" };
+      await api.createGroup("admin", data);
+      const groups = await api.listGroups("admin", data);
+      assert(groups.some((g) => g.name === data.name));
     });
 
     it("should update group", async function () {
-      // TODO
+      const data = { name: "updateGroup" };
+      const group = await api.createGroup("admin", data);
+      const newName = "someNewNameAfterUpdate";
+      const newGroup = await api.updateGroup(group.id, { name: newName });
+      assert.equal(newGroup.name, newName);
     });
 
     it("should view group", async function () {
-      // TODO
+      const data = { name: "viewGroup" };
+      const groupId = (await api.createGroup("admin", data)).id;
+      const group = await api.viewGroup(groupId);
+      assert.equal(group.id, groupId);
     });
 
     it("should delete group", async function () {
-      // TODO
+      const data = { name: "deleteGroup" };
+      const groupId = (await api.createGroup("admin", data)).id;
+      const group = await api.deleteGroup(groupId);
+      assert.equal(group.id, groupId);
     });
 
     it("should list group members", async function () {
-      // TODO
+      const data = { name: "listMembers" };
+      const groupId = (await api.createGroup("admin", data)).id;
+      const userData = {
+        username: "listGroupMembers",
+        email: "noreply@netsblox.org",
+        groupId,
+      };
+      await api.createUser(userData);
+      const members = await api.listMembers(groupId);
+      assert.equal(members.length, 1);
+      assert(members[0].username, userData.username);
     });
   });
 
@@ -530,24 +562,36 @@ describe("api", function () {
       // TODO
     });
 
-    it("should save user library", async function () {
-      // TODO
-    });
+    it("should save/list/get/publish/unpublish/delete user library", async function () {
+      const library = {
+        name: "saveUserLib",
+        blocks: "<blocks/>",
+        notes: "notes..",
+      };
+      const metadata = await api.saveUserLibrary("admin", library);
+      assert.equal(metadata.name, library.name);
+      assert.equal(metadata.state, "Private");
 
-    it("should get user library", async function () {
-      // TODO
-    });
+      // list
+      const libraries = await api.listUserLibraries("admin");
+      assert(libraries.some((lib) => lib.name === library.name));
 
-    it("should list libraries", async function () {
-      // TODO
-    });
+      // get
+      const libraryData = await api.getUserLibrary("admin", library.name);
+      assert.equal(libraryData.blocks, library.blocks);
 
-    it("should delete library", async function () {
-      // TODO
-    });
+      // publish
+      const state = await api.publishLibrary("admin", library.name);
+      assert.equal(state, "Public");
 
-    it("should publish/unpublish library", async function () {
-      // TODO
+      // unpublish
+      const newState = await api.unpublishLibrary("admin", library.name);
+      assert.equal(newState, "Private");
+
+      // delete
+      const newMetadata = await api.deleteUserLibrary("admin", library.name);
+      assert.equal(newMetadata.name, library.name);
+      assert.equal(newMetadata.state, "Private");
     });
 
     it("should list pending libraries", async function () {
@@ -580,19 +624,38 @@ describe("api", function () {
       ];
 
       const groupData = await api.setGroupHosts(group.id, hosts);
-      assert.equal(groupData.serviceHosts.length, 2);
+      assert.equal(groupData.servicesHosts.length, 2);
     });
 
-    it("should list user hosts", async function () {
-      // TODO
-    });
+    it("should set/list user hosts", async function () {
+      const hosts = [
+        { url: "http://localhost:4042", categories: ["host3"] },
+      ];
 
-    it("should set user hosts", async function () {
-      // TODO
+      const user = await api.setUserHosts("admin", hosts);
+      assert.equal(user.username, "admin");
     });
 
     it("should list all hosts", async function () {
-      // TODO
+      const serviceHosts = [
+        { url: "http://localhost:4040", categories: ["host1"] },
+        { url: "http://localhost:4041", categories: ["host2"] },
+      ];
+      const data = { name: "testListAllHosts", serviceHosts };
+      const group = await api.createGroup("admin", data);
+      const userData = {
+        username: "listAllHostsUser",
+        email: "noreply@netsblox.org",
+        groupId: group.id,
+      };
+      const member = await api.createUser(userData);
+      const hosts = [
+        { url: "http://localhost:4042", categories: ["host3"] },
+      ];
+
+      await api.setUserHosts(member.username, hosts);
+      const allHosts = await api.listAllHosts(member.username);
+      assert.equal(allHosts.length, 3);
     });
 
     it("should authorize/list/unauthorize host", async function () {
@@ -609,46 +672,50 @@ describe("api", function () {
   });
 
   describe("service settings", function () {
-    it("should list hosts for the user", async function () {
-      // TODO
+    it("should set/get/list/delete settings for the user", async function () {
+      // set
+      const settings = "SomeSettings";
+      await api.setUserSettings("admin", "TestHost", settings);
+
+      // get
+      const data = await api.getUserSettings("admin", "TestHost");
+      assert.equal(data, settings);
+
+      // list
+      const [hostname] = await api.listUserHostsWithSettings("admin");
+      assert.equal(hostname, "TestHost");
+
+      // delete
+      await api.deleteUserSettings("admin", "TestHost");
     });
 
-    it("should get settings for the user", async function () {
-      // TODO
-    });
+    it("should set/get/list/delete hosts for the group", async function () {
+      const group = await api.createGroup("admin", { name: "groupSettings" });
 
-    it("should set settings for the user", async function () {
-      // TODO
-    });
+      // set
+      const settings = "SomeSettings";
+      await api.setGroupSettings(group.id, "TestHost", settings);
 
-    it("should delete settings for the user", async function () {
-      // TODO
-    });
+      // get
+      const data = await api.getGroupSettings(group.id, "TestHost");
+      assert.equal(data, settings);
 
-    it("should list hosts for the group", async function () {
-      // TODO
-    });
+      // list
+      const [hostname] = await api.listGroupHostsWithSettings(group.id);
+      assert.equal(hostname, "TestHost");
 
-    it("should get settings for the group", async function () {
-      // TODO
-    });
-
-    it("should set settings for the group", async function () {
-      // TODO
-    });
-
-    it("should delete settings for the group", async function () {
-      // TODO
+      // delete
+      await api.deleteGroupSettings(group.id, "TestHost");
     });
 
     it("should get all settings", async function () {
-      // TODO
+      const allSettings = await api.getAllSettings("admin", "TestHost");
+      assert(allSettings.hasOwnProperty("groups"));
     });
   });
 });
 
 async function ensureUserExists(api, username) {
-  const username = `testCreateUser${Date.now()}`;
   const email = "noreply@netsblox.org";
   const userData = { username, email };
   return api.createUser(userData)

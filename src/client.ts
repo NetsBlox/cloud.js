@@ -1,3 +1,5 @@
+import { ConnectionRefusedError, RequestError } from "./error";
+
 const defaultLocalizer = (text: string) => text;
 const isNodeJs = typeof window === "undefined";
 
@@ -105,8 +107,9 @@ export default class Cloud {
     return await response.json();
   }
 
-  async getSharedProjectList(): Promise<ProjectMetadata[]> {
-    return await this.api.getSharedProjectList(this.username);
+  async getSharedProjectList() {
+    const response = await this.fetch(`/projects/shared/${this.username}`);
+    return await response.json();
   }
 
   async changePassword(

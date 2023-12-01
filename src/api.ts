@@ -73,8 +73,7 @@ export default class NetsBloxApi {
   }
 
   async whoami(): Promise<string> {
-    const response = await this.fetch("/users/whoami");
-    return await response.text();
+    return await this.fetchText("/users/whoami");
   }
 
   async banUser(username: string): Promise<BannedAccount> {
@@ -177,7 +176,7 @@ export default class NetsBloxApi {
     state: FriendLinkState,
   ): Promise<FriendLink> {
     return await this.post(
-      `/friends/${encodeURIComponent(username)}/unblock/${
+      `/friends/${encodeURIComponent(username)}/invites/${
         encodeURIComponent(sender)
       }`,
       state,
@@ -193,13 +192,13 @@ export default class NetsBloxApi {
     return await this.post(`/groups/user/${encodeURIComponent(owner)}`, data);
   }
 
-  async updateGroup(owner: string, data: UpdateGroupData): Promise<Group> {
+  async updateGroup(id: GroupId, data: UpdateGroupData): Promise<Group> {
     const opts = {
       method: "patch",
       body: JSON.stringify(data),
     };
     return await this.fetchJson(
-      `/groups/user/${encodeURIComponent(owner)}`,
+      `/groups/id/${encodeURIComponent(id)}`,
       opts,
     );
   }
@@ -245,8 +244,7 @@ export default class NetsBloxApi {
   }
 
   async getProjectNamedXml(owner: string, name: string): Promise<string> {
-    const response = await this.fetch(`/projects/user/${owner}/${name}/xml`);
-    return await response.text();
+    return await this.fetchText(`/projects/user/${owner}/${name}/xml`);
   }
 
   async getProjectNamedMetadata(
@@ -292,8 +290,7 @@ export default class NetsBloxApi {
   async getProjectXml(
     id: ProjectId,
   ): Promise<string> {
-    const response = await this.fetch(`/projects/id/${id}/xml`);
-    return await response.text();
+    return await this.fetchText(`/projects/id/${id}/xml`);
   }
 
   async publishProject(
@@ -416,12 +413,11 @@ export default class NetsBloxApi {
   }
 
   async getUserLibrary(owner: string, name: string): Promise<string> {
-    const response = await this.fetch(
+    return await this.fetchText(
       `/libraries/user/${encodeURIComponent(owner)}/${
         encodeURIComponent(name)
       }`,
     );
-    return await response.text();
   }
 
   async saveUserLibrary(
@@ -490,11 +486,10 @@ export default class NetsBloxApi {
     state: ClientStateData,
   ): Promise<string> {
     const opts = { method: "post", body: JSON.stringify(state) };
-    const response = await this.fetch(
+    return await this.fetchText(
       `/network/${encodeURIComponent(clientId)}/state`,
       opts,
     );
-    return await response.text();
   }
 
   async getClientState(
@@ -728,6 +723,11 @@ export default class NetsBloxApi {
   private async fetchJson(url: string, opts?: RequestInit): Promise<any> {
     const response = await this.fetch(url, opts);
     return await response.json();
+  }
+
+  private async fetchText(url: string, opts?: RequestInit): Promise<any> {
+    const response = await this.fetch(url, opts);
+    return await response.text();
   }
 
   private async post(url: string, data?: any): Promise<any> {
