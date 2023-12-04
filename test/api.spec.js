@@ -28,7 +28,7 @@ describe("api", function () {
     });
 
     it("should create users", async function () {
-      const username = `testCreateUser${Date.now()}`;
+      const username = `testCreateUser`;
       const email = "noreply@netsblox.org";
       const userData = { username, email };
       const user = await api.createUser(userData);
@@ -46,8 +46,8 @@ describe("api", function () {
     });
 
     it("should ban user", async function () {
-      const username = `testBanUser${Date.now()}`;
-      const email = "noreply@netsblox.org";
+      const username = `testBanUser`;
+      const email = "banned@netsblox.org";
       const userData = { username, email };
       await api.createUser(userData);
       const acct = await api.banUser(username);
@@ -55,8 +55,8 @@ describe("api", function () {
     });
 
     it("should unban user", async function () {
-      const username = `testUnbanUser${Date.now()}`;
-      const email = "noreply@netsblox.org";
+      const username = `testUnbanUser`;
+      const email = "testUnban@netsblox.org";
       const userData = { username, email };
       await api.createUser(userData);
 
@@ -66,7 +66,7 @@ describe("api", function () {
     });
 
     it("should delete user", async function () {
-      const username = `testDeleteUser${Date.now()}`;
+      const username = `testDeleteUser`;
       const email = "noreply@netsblox.org";
       const userData = { username, email };
       await api.createUser(userData);
@@ -75,14 +75,14 @@ describe("api", function () {
     });
 
     it("should set password", async function () {
-      const username = `testSetPassword${Date.now()}`;
+      const username = `testSetPassword`;
       const email = "noreply@netsblox.org";
       const userData = { username, email };
       await api.createUser(userData);
 
       const password = "myPassword";
       await api.setPassword(username, password);
-      await api.login(username, password);
+      await api.login({ credentials: { NetsBlox: { username, password } } });
     });
   });
 
@@ -171,7 +171,7 @@ describe("api", function () {
         email: "noreply@netsblox.org",
         groupId,
       };
-      await api.createUser(userData);
+      const user = await api.createUser(userData);
       const members = await api.listMembers(groupId);
       assert.equal(members.length, 1);
       assert(members[0].username, userData.username);
@@ -523,7 +523,7 @@ describe("api", function () {
         name: "newName",
       };
       const metadata = await api.updateProject(projectId, updateData);
-      assert.notEqual(metadata.id, projectId);
+      assert.equal(metadata.id, projectId);
       assert.notEqual(metadata.name, data.name);
     });
 
@@ -631,7 +631,8 @@ describe("api", function () {
         metadata.id,
         collaborator,
       );
-      assert.deepEqual(metadata, updatedMetadata);
+      assert.equal(metadata.id, updatedMetadata.id);
+      assert.deepEqual(metadata.collaborators, updatedMetadata.collaborators);
     });
   });
 
@@ -664,8 +665,8 @@ describe("api", function () {
       assert(communityLibs[0].hasOwnProperty("notes"));
 
       // unpublish
-      const newState = await api.unpublishLibrary("admin", library.name);
-      assert.equal(newState, "Private");
+      const libMetadata = await api.unpublishLibrary("admin", library.name);
+      assert.equal(libMetadata.state, "Private");
 
       // delete
       const newMetadata = await api.deleteUserLibrary("admin", library.name);
@@ -705,8 +706,8 @@ describe("api", function () {
       const group = await api.createGroup("admin", data);
       const hosts = await api.listGroupHosts(group.id);
       assert.equal(hosts.length, 2);
-      assert.equal(hosts[0].hasOwnProperty("url"));
-      assert.equal(hosts[0].hasOwnProperty("categories"));
+      assert(hosts[0].hasOwnProperty("url"));
+      assert(hosts[0].hasOwnProperty("categories"));
     });
 
     it("should set group hosts", async function () {
@@ -718,7 +719,7 @@ describe("api", function () {
       ];
 
       const groupData = await api.setGroupHosts(group.id, hosts);
-      assert.equal(Array.isArray(groupData.servicesHosts));
+      assert(Array.isArray(groupData.servicesHosts));
     });
 
     it("should set/list user hosts", async function () {
@@ -768,12 +769,12 @@ describe("api", function () {
   describe("service settings", function () {
     it("should set/get/list/delete settings for the user", async function () {
       // set
-      const settings = `{"SomeSetting": "SomeValue"}`;
-      await api.setUserSettings("admin", "TestHost", settings);
+      const settingsStr = `{"SomeSetting": "SomeValue"}`;
+      await api.setUserSettings("admin", "TestHost", settingsStr);
 
       // get
       const data = await api.getUserSettings("admin", "TestHost");
-      assert.equal(data, settings);
+      assert.deepEqual(data, JSON.parse(settingsStr));
 
       // list
       const [hostname] = await api.listUserHostsWithSettings("admin");
@@ -787,12 +788,12 @@ describe("api", function () {
       const group = await api.createGroup("admin", { name: "groupSettings" });
 
       // set
-      const settings = `{"SomeSetting": "SomeValue"}`;
-      await api.setGroupSettings(group.id, "TestHost", settings);
+      const settingsStr = `{"SomeSetting": "SomeValue"}`;
+      await api.setGroupSettings(group.id, "TestHost", settingsStr);
 
       // get
       const data = await api.getGroupSettings(group.id, "TestHost");
-      assert.equal(data, settings);
+      assert.deepEqual(data, JSON.parse(settingsStr));
 
       // list
       const [hostname] = await api.listGroupHostsWithSettings(group.id);

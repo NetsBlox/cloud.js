@@ -165,7 +165,7 @@ export default class NetsBloxApi {
     recipient: string,
   ): Promise<FriendLinkState> {
     return await this.post(
-      `/friends/${encodeURIComponent(username)}/invite`,
+      `/friends/${encodeURIComponent(username)}/invite/`,
       recipient,
     );
   }
@@ -185,11 +185,11 @@ export default class NetsBloxApi {
 
   ////////////////////////////// Groups (Classes) //////////////////////////////
   async listGroups(owner: string): Promise<Group[]> {
-    return await this.fetchJson(`/groups/user/${encodeURIComponent(owner)}`);
+    return await this.fetchJson(`/groups/user/${encodeURIComponent(owner)}/`);
   }
 
   async createGroup(owner: string, data: CreateGroupData): Promise<Group> {
-    return await this.post(`/groups/user/${encodeURIComponent(owner)}`, data);
+    return await this.post(`/groups/user/${encodeURIComponent(owner)}/`, data);
   }
 
   async updateGroup(id: GroupId, data: UpdateGroupData): Promise<Group> {
@@ -387,7 +387,7 @@ export default class NetsBloxApi {
   }
 
   async listCollaborators(projectId: ProjectId): Promise<string[]> {
-    return await this.fetchJson(`/projects/id/${projectId}/collaborators`);
+    return await this.fetchJson(`/projects/id/${projectId}/collaborators/`);
   }
 
   async removeCollaborator(
