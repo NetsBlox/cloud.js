@@ -4,6 +4,7 @@ const adminUser = "admin";
 const password = "somePassword";
 
 const client = new CloudClient("http://127.0.0.1:7777");
+client.onerror = () => {}; // suppress default error logging
 
 describe("localize", function () {
   it("should have localize fn (default: identity)", function () {
