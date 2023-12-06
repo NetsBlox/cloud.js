@@ -94,7 +94,7 @@ export default class NetsBloxApi {
   }
 
   async setPassword(username: string, password: string): Promise<User> {
-    const opts = { method: "patch", body: JSON.stringify(password) };
+    const opts = { method: "PATCH", body: JSON.stringify(password) };
     return await this.fetchJson(
       `/users/${encodeURIComponent(username)}/password`,
       opts,
@@ -693,6 +693,10 @@ export default class NetsBloxApi {
     if (this.auth) {
       this.auth.inject(opts);
     }
+
+    // Make sure the method is all caps as a workaround for:
+    // https://stackoverflow.com/questions/34666680/fetch-patch-request-is-not-allowed
+    opts.method = opts.method ? opts.method.toUpperCase() : "GET";
 
     let response: Response;
     try {
