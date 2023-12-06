@@ -707,9 +707,7 @@ export default class NetsBloxApi {
     }
 
     if (!response.ok) {
-      console.log("Response is not ok to", url, "(", opts, ")");
       const error = await RequestError.from(response);
-      console.log(response.status);
       throw error;
     }
 
