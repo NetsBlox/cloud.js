@@ -3,8 +3,12 @@ const assert = require("assert");
 const adminUser = "admin";
 const password = "somePassword";
 
-const client = new CloudClient("http://127.0.0.1:7777");
-client.onerror = () => {}; // suppress default error logging
+function getClient(url) {
+  const client = new CloudClient(url);
+  client.onerror = () => {}; // suppress default error logging
+  return client;
+}
+const client = getClient("http://127.0.0.1:7777");
 
 describe("localize", function () {
   it("should have localize fn (default: identity)", function () {
@@ -31,7 +35,7 @@ describe("login", function () {
   });
 
   it("should throw error on invalid URL", async function () {
-    const client = new CloudClient("http://localhost:da7777");
+    const client = getClient("http://localhost:da7777");
     await assert.rejects(client.login(adminUser, password));
   });
 });
