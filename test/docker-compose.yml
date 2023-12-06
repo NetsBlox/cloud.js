@@ -16,8 +16,6 @@ services:
     image: mongo:5.0-focal
     ports:
         - "27017:27017"
-    volumes:
-        - mongodb_data:/data/db
 
   minio:  # Blob storage for project contents (media, etc)
     restart: always
@@ -28,9 +26,4 @@ services:
     environment:
         - "MINIO_ACCESS_KEY=KEY"
         - "MINIO_SECRET_KEY=MYSECRET"
-    volumes:
-        - s3_data:/mnt/data
 
-volumes:
-    s3_data:
-    mongodb_data:

@@ -1,2 +1,2 @@
-require('isomorphic-fetch')
-module.exports = require('./dist/client');
+require("isomorphic-fetch");
+module.exports = require("./dist/bundle");

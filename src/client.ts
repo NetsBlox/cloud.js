@@ -1,3 +1,5 @@
+import { ConnectionRefusedError, RequestError } from "./error";
+
 const defaultLocalizer = (text: string) => text;
 const isNodeJs = typeof window === "undefined";
 
@@ -697,23 +699,5 @@ class CloudError extends Error {
   constructor(label, message = undefined) {
     super(message || label);
     this.label = label;
-  }
-}
-
-class RequestError extends Error {
-  status?: number;
-
-  static async from(response: Response): Promise<RequestError> {
-    const message = await response.text() || response.statusText ||
-      "An unknown error occurred. Please try again later.";
-    const error = new RequestError(message);
-    error.status = response.status;
-    return error;
-  }
-}
-
-class ConnectionRefusedError extends RequestError {
-  constructor(url: string) {
-    super(`Unable to connect to ${url}`);
   }
 }

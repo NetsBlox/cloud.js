@@ -17,4 +17,23 @@ export default [
     },
     plugins,
   },
+  {
+    input: "src/api.ts",
+    output: {
+      file: "dist/api.js",
+      format: "umd",
+      name: "NetsBloxApi",
+      exports: "default",
+    },
+    plugins,
+  },
+  {
+    input: "src/index.ts",
+    output: {
+      file: "dist/bundle.js",
+      format: "umd",
+      name: "NetsBloxCloud",
+    },
+    plugins,
+  },
 ];
