@@ -382,7 +382,7 @@ describe("api", function () {
           {
             name: "someRole",
             code:
-              "<code><thumbnail>data:image/png;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7</code>",
+              "<code><thumbnail>data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==</thumbnail></code>",
             media: "<media/>",
           },
         ],
