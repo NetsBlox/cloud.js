@@ -1,4 +1,5 @@
 import { ConnectionRefusedError, RequestError } from "./error";
+import NetsBloxApi from './api';
 
 const defaultLocalizer = (text: string) => text;
 const isNodeJs = typeof window === "undefined";
@@ -51,6 +52,7 @@ export default class Cloud {
   newProjectRequest: Promise<any> | undefined;
   localize: (text: string) => string;
   token: string | null;
+  api: NetsBloxApi;
 
   constructor(url, clientId, username, localize = defaultLocalizer) {
     this.clientId = clientId;
@@ -60,6 +62,7 @@ export default class Cloud {
     this.url = url;
     this.token = null; // only needed in NodeJs
     this.localize = localize;
+    this.api = new NetsBloxApi(this.url);
   }
 
   clear() {
