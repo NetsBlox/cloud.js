@@ -247,6 +247,23 @@ export default class NetsBloxApi {
     return await this.fetchText(`/projects/user/${owner}/${name}/xml`);
   }
 
+  async getProjectThumbnail(id: ProjectId, aspectRatio?: number): Promise<Response> {
+    const url = this.getProjectThumbnailPath(id, aspectRatio);
+    return await this.fetch(url);
+  }
+
+  private getProjectThumbnailPath(id: ProjectId, aspectRatio?: number): string {
+    let url = `/projects/id/${id}/thumbnail`;
+    if (aspectRatio) {
+      url += `?aspectRatio=${aspectRatio}`;
+    }
+    return url;
+  }
+
+  getProjectThumbnailUrl(id: ProjectId, aspectRatio?: number): string {
+    return this.baseUrl + this.getProjectThumbnailPath(id, aspectRatio);
+  }
+
   async getProjectNamedMetadata(
     owner: string,
     name: string,

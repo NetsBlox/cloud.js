@@ -375,6 +375,25 @@ describe("api", function () {
       assert(xml.includes("someProject"));
     });
 
+    it("should get thumbnail", async function () {
+      const data = {
+        name: "someProject",
+        roles: [
+          {
+            name: "someRole",
+            code:
+              "<code><thumbnail>data:image/png;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7</code>",
+            media: "<media/>",
+          },
+        ],
+      };
+      const metadata = await api.createProject(data);
+      assert.equal(metadata.owner, "admin");
+
+      const response = await api.getProjectThumbnail(metadata.id);
+      assert(response.ok);
+    });
+
     it("should publish/unpublish project", async function () {
       const data = {
         name: "testPublishProject",
