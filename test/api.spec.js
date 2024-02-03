@@ -27,6 +27,18 @@ describe("api", function () {
       assert(users.find((user) => user.username === "admin"));
     });
 
+    it("should support 'forgot username' endpoint", async function () {
+      try {
+        await api.forgotUsername('admin@netsblox.org');
+      } catch (err) {
+        // This will throw an error since email is not configured on the server.
+        // That's ok though since we just need to make sure it wasn't an error w/
+        // the request
+        
+        assert(err.status > 499);
+      }
+    });
+
     it("should create users", async function () {
       const username = `testCreateUser`;
       const email = "noreply@netsblox.org";
