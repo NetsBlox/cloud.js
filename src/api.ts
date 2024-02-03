@@ -65,7 +65,9 @@ export default class NetsBloxApi {
    * email address.
    */
   async forgotUsername(email: string): Promise<void> {
-    return await this.post(`/users/forgot-username`, email);
+    const url = `/users/forgot-username`;
+    const opts = {method: 'post', body: JSON.stringify(email)};
+    await this.fetch(url, opts);
   }
 
   async login(loginData: LoginRequest): Promise<User> {
