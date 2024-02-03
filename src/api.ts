@@ -60,6 +60,14 @@ export default class NetsBloxApi {
     return await this.post(`/users/create`, userData);
   }
 
+  /**
+   * Email the given address with a list of all users registered with the given
+   * email address.
+   */
+  async forgotUsername(email: string): Promise<void> {
+    return await this.post(`/users/forgot-username`, email);
+  }
+
   async login(loginData: LoginRequest): Promise<User> {
     return await this.post(`/users/login`, loginData);
   }
