@@ -785,7 +785,7 @@ describe("api", function () {
     });
 
     it("should authorize/list/unauthorize host", async function () {
-      const host = { url: "http://localhost", id: "TestHost", public: false };
+      const host = { url: "http://localhost", id: "TestHost", visibility: "private" };
       const secret = await api.authorizedHost(host);
       assert.equal(typeof secret, "string");
 
