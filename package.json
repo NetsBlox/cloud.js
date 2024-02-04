@@ -1,6 +1,6 @@
 {
   "name": "netsblox-cloud-client",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "JS client for the netsblox cloud",
   "main": "index.js",
   "scripts": {
