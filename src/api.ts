@@ -12,6 +12,7 @@ import { ClientStateData } from "./types/ClientStateData";
 import { CollaborationInvite } from "./types/CollaborationInvite";
 import { CreateGroupData } from "./types/CreateGroupData";
 import { CreateLibraryData } from "./types/CreateLibraryData";
+import { CreateMagicLinkData } from "./types/CreateMagicLinkData";
 import { CreateProjectData } from "./types/CreateProjectData";
 import { ExternalClient } from "./types/ExternalClient";
 import { FriendInvite } from "./types/FriendInvite";
@@ -66,7 +67,7 @@ export default class NetsBloxApi {
    */
   async forgotUsername(email: string): Promise<void> {
     const url = `/users/forgot-username`;
-    const opts = {method: 'post', body: JSON.stringify(email)};
+    const opts = { method: "post", body: JSON.stringify(email) };
     await this.fetch(url, opts);
   }
 
@@ -127,6 +128,16 @@ export default class NetsBloxApi {
       `/users/${encodeURIComponent(username)}/unlink`,
       account,
     );
+  }
+
+  /**
+   * Send a magic link to the given email address. Usable for any user associated with the
+   * address.
+   */
+  async sendMagicLink(data: CreateMagicLinkData): Promise<void> {
+    const url = "/magic-links/";
+    const opts = { method: "post", body: JSON.stringify(data) };
+    await this.fetch(url, opts);
   }
 
   ////////////////////////////// Friends //////////////////////////////
@@ -257,7 +268,10 @@ export default class NetsBloxApi {
     return await this.fetchText(`/projects/user/${owner}/${name}/xml`);
   }
 
-  async getProjectThumbnail(id: ProjectId, aspectRatio?: number): Promise<Response> {
+  async getProjectThumbnail(
+    id: ProjectId,
+    aspectRatio?: number,
+  ): Promise<Response> {
     const url = this.getProjectThumbnailPath(id, aspectRatio);
     return await this.fetch(url);
   }
