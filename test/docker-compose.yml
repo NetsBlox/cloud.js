@@ -8,8 +8,10 @@ services:
         - "RUN_MODE=local"
     network_mode: host
     depends_on:
-        - mongo
-        - minio
+        mongo:
+          condition: service_started
+        minio:
+          condition: service_healthy
 
   mongo:  # Database for users, groups, project metadata, etc
     restart: always
@@ -23,6 +25,8 @@ services:
     command: server /mnt/data
     ports:
         - "9000:9000"
+    healthcheck:
+      test: curl --fail http://localhost:9000/minio/health/live
     environment:
         - "MINIO_ACCESS_KEY=KEY"
         - "MINIO_SECRET_KEY=MYSECRET"
