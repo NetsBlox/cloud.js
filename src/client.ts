@@ -1,5 +1,5 @@
 import { ConnectionRefusedError, RequestError } from "./error";
-import NetsBloxApi from './api';
+import NetsBloxApi from "./api";
 
 const defaultLocalizer = (text: string) => text;
 const isNodeJs = typeof window === "undefined";
@@ -464,6 +464,20 @@ export default class Cloud {
       method: "GET",
     };
     return await this.fetch(url, opts);
+  }
+
+  /**
+   * RAII-style API usage where the error handler is called on exception.
+   */
+  async callApi<T>(
+    fn: (api: NetsBloxApi) => Promise<T>,
+  ): Promise<T | undefined> {
+    try {
+      return await fn(this.api);
+    } catch (err) {
+      this.onerror(err);
+      throw err;
+    }
   }
 
   async fetch(url, opts?: RequestInit) {
