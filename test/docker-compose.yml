@@ -27,6 +27,8 @@ services:
         - "9000:9000"
     healthcheck:
       test: curl --fail http://localhost:9000/minio/health/live
+      interval: 1s
+      retries: 60
     environment:
         - "MINIO_ACCESS_KEY=KEY"
         - "MINIO_SECRET_KEY=MYSECRET"
