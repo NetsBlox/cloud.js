@@ -26,7 +26,7 @@ services:
     ports:
         - "9000:9000"
     healthcheck:
-      test: curl --fail http://localhost:9000/minio/health/live || exit 1
+      test: mc alias set mycloud http://localhost:9000 KEY MYSECRET && mc ready mycloud || exit 1
       interval: 5s
       retries: 120
       timeout: 600s
