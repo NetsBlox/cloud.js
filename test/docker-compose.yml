@@ -29,6 +29,7 @@ services:
       test: curl --fail http://localhost:9000/minio/health/live || exit 1
       interval: 5s
       retries: 120
+      timeout: 600s
     environment:
         - "MINIO_ACCESS_KEY=KEY"
         - "MINIO_SECRET_KEY=MYSECRET"
