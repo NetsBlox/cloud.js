@@ -8,8 +8,10 @@ services:
         - "RUN_MODE=local"
     network_mode: host
     depends_on:
-        - mongo
-        - minio
+        mongo:
+          condition: service_started
+        minio:
+          condition: service_healthy
 
   mongo:  # Database for users, groups, project metadata, etc
     restart: always
@@ -23,6 +25,11 @@ services:
     command: server /mnt/data
     ports:
         - "9000:9000"
+    healthcheck:
+      test: mc alias set mycloud http://localhost:9000 KEY MYSECRET && mc ready mycloud || exit 1
+      interval: 5s
+      retries: 120
+      timeout: 600s
     environment:
         - "MINIO_ACCESS_KEY=KEY"
         - "MINIO_SECRET_KEY=MYSECRET"
