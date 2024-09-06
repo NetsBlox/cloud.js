@@ -603,7 +603,7 @@ export default class Cloud {
   }
 
   async unlinkAccount(account: LinkedAccount) {
-    await this.post(`/users/${this.username}/unlink/`, account);
+    await this.post(`/users/${this.username}/unlink`, account);
   }
 
   async getProjectData(projectId = this.projectId) {
