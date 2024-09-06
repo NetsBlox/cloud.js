@@ -22,7 +22,7 @@ jobs:
         node-version: v18.x
     - name: spin up cloud
       id: startCloud
-      run: docker-compose -f test/docker-compose.yml up -d
+      run: docker compose -f test/docker-compose.yml up -d
     - name: wait for cloud to listen
       id: waitForCloud
       uses: ifaxity/wait-on-action@v1
@@ -36,4 +36,4 @@ jobs:
     - run: npm run build
     - run: npm test
     - name: Spin down docker-compose
-      run: docker-compose -f test/docker-compose.yml down
+      run: docker compose -f test/docker-compose.yml down
