@@ -42,6 +42,13 @@ import { UpdateGroupData } from "./types/UpdateGroupData";
 import { UpdateProjectData } from "./types/UpdateProjectData";
 import { UpdateRoleData } from "./types/UpdateRoleData";
 import { User } from "./types/User";
+import { AssignmentId } from "./types/AssignmentId";
+import { CreateAssignmentData } from "./types/CreateAssignmentData";
+import { Assignment } from "./types/Assignment";
+import { SubmissionId } from "./types/SubmissionId";
+import { CreateSubmissionData } from "./types/CreateSubmissionData";
+import { UpdateAssignmentData } from "./types/UpdateAssignmentData";
+import { Submission } from "./types/Submission";
 
 export default class NetsBloxApi {
   private baseUrl: string;
@@ -235,6 +242,115 @@ export default class NetsBloxApi {
 
   async listMembers(id: GroupId): Promise<User[]> {
     return await this.fetchJson(`/groups/id/${encodeURIComponent(id)}/members`);
+  }
+
+  async createAssignment(
+    id: GroupId,
+    data: CreateAssignmentData,
+  ): Promise<Assignment> {
+    return await this.post(
+      `groups/id/${encodeURIComponent(id)}/assignments/`,
+      data,
+    );
+  }
+
+  async listGroupAssignments(id: GroupId): Promise<Assignment[]> {
+    return await this.fetchJson(
+      `groups/id/${encodeURIComponent(id)}/assignments/`,
+    );
+  }
+
+  async viewAssignment(
+    group_id: GroupId,
+    id: AssignmentId,
+  ): Promise<Assignment> {
+    return await this.fetchJson(
+      `groups/id/${encodeURIComponent(group_id)}/assignments/id/${id}/`,
+    );
+  }
+
+  async editAssignment(
+    group_id: GroupId,
+    id: AssignmentId,
+    data: UpdateAssignmentData,
+  ): Promise<Group> {
+    const opts = {
+      method: "patch",
+      body: JSON.stringify(data),
+    };
+    return await this.fetchJson(
+      `groups/id/${encodeURIComponent(group_id)}/assignments/id/${id}/`,
+      opts,
+    );
+  }
+
+  async deleteAssignment(
+    group_id: GroupId,
+    id: AssignmentId,
+  ): Promise<Assignment> {
+    const opts = { method: "delete" };
+    return await this.fetchJson(
+      `/groups/id/${encodeURIComponent(group_id)}/assignments/id/${encodeURIComponent(id)}/`,
+      opts,
+    );
+  }
+
+  async createSubmission(
+    group_id: GroupId,
+    id: AssignmentId,
+    data: CreateSubmissionData,
+  ): Promise<Submission> {
+    return await this.post(
+      `/groups/id/${encodeURIComponent(group_id)}/assignments/id/${encodeURIComponent(id)}/submissions/`,
+      data,
+    );
+  }
+
+  async viewSubmission(group_id: GroupId, assignment_id: AssignmentId, id: SubmissionId): Promise<Submission> {
+    return await this.fetchJson(
+      `groups/id/${encodeURIComponent(group_id)}/assignments/id/${encodeURIComponent(assignment_id)}/submissions/id/${encodeURIComponent(id)}/`,
+    );
+  }
+
+  async viewAssignmentSubmissions(
+    group_id: GroupId,
+    assignment_id: AssignmentId,
+  ): Promise<Submission[]> {
+    return await this.fetchJson(
+      `/groups/id/${encodeURIComponent(group_id)}/assignments/id/${encodeURIComponent(assignment_id)}/submissions/`,
+    );
+  }
+
+  async viewUserSubmissions(
+    group_id: GroupId,
+    assignment_id: AssignmentId,
+    username: string,
+  ): Promise<Submission[]> {
+    return await this.fetchJson(
+      `/groups/id/${encodeURIComponent(group_id)}/assignments/id/${encodeURIComponent(assignment_id)}/submissions/user/${encodeURIComponent(username)}/`,
+    );
+  }
+
+  async viewSubmissionXml(
+    group_id: GroupId,
+    assignment_id: AssignmentId,
+    id: SubmissionId,
+  ): Promise<string> {
+    return await this.fetchJson(
+      `groups/id/${encodeURIComponent(group_id)}/assignments/id/${encodeURIComponent(assignment_id)}/submissions/id/${encodeURIComponent(id)}/xml/`,
+    );
+  }
+
+  async deleteSubmission(
+    group_id: GroupId,
+    assignment_id: AssignmentId,
+    id: SubmissionId,
+  ): Promise<Submission> {
+    const opts = { method: "delete" };
+    return await this.fetchJson(
+      `groups/id/${encodeURIComponent(group_id)}/assignments/id/${encodeURIComponent(assignment_id)}/submissions/id/${encodeURIComponent(id)}/`,
+      opts,
+    );
   }
 
   ////////////////////////////// Projects //////////////////////////////
