@@ -49,6 +49,7 @@ export default class Cloud {
   username: string;
   projectId: string | null;
   roleId: string | null;
+  groupId: string | null;
   newProjectRequest: Promise<any> | undefined;
   localize: (text: string) => string;
   token: string | null;
@@ -59,6 +60,7 @@ export default class Cloud {
     this.username = username;
     this.projectId = null;
     this.roleId = null;
+    this.groupId = null;
     this.url = url;
     this.token = null; // only needed in NodeJs
     this.localize = localize;
@@ -67,6 +69,7 @@ export default class Cloud {
 
   clear() {
     this.username = null;
+    this.groupId = null;
     this.token = null;
   }
 
@@ -96,6 +99,7 @@ export default class Cloud {
     const response = await this.post("/users/login", body);
     const user = await response.json();
     this.username = user.username;
+    this.groupId = user.groupId;
     if (isNodeJs) {
       const cookie = response.headers.get("set-cookie");
       if (!cookie) throw new CloudError("No cookie received");
