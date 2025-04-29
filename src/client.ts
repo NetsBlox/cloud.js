@@ -682,6 +682,15 @@ export default class Cloud {
     await this.post(`/libraries/user/${this.username}/${name}/unpublish`);
   }
 
+  async saveSubmission(assignmentId, xml) {
+    const body = { owner: this.username, xml: xml };
+    const response = await this.post(
+      `/groups/id/${encodeURIComponent(this.groupId)}/assignments/id/${encodeURIComponent(assignmentId)}/submissions/`,
+      body,
+    );
+    return await response.json();
+  }
+
   // Cloud: user messages (to be overridden)
 
   message(string) {

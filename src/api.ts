@@ -249,14 +249,14 @@ export default class NetsBloxApi {
     data: CreateAssignmentData,
   ): Promise<Assignment> {
     return await this.post(
-      `groups/id/${encodeURIComponent(id)}/assignments/`,
+      `/groups/id/${encodeURIComponent(id)}/assignments/`,
       data,
     );
   }
 
   async listGroupAssignments(id: GroupId): Promise<Assignment[]> {
     return await this.fetchJson(
-      `groups/id/${encodeURIComponent(id)}/assignments/`,
+      `/groups/id/${encodeURIComponent(id)}/assignments/`,
     );
   }
 
@@ -265,7 +265,7 @@ export default class NetsBloxApi {
     id: AssignmentId,
   ): Promise<Assignment> {
     return await this.fetchJson(
-      `groups/id/${encodeURIComponent(group_id)}/assignments/id/${id}/`,
+      `/groups/id/${encodeURIComponent(group_id)}/assignments/id/${id}/`,
     );
   }
 
@@ -279,7 +279,7 @@ export default class NetsBloxApi {
       body: JSON.stringify(data),
     };
     return await this.fetchJson(
-      `groups/id/${encodeURIComponent(group_id)}/assignments/id/${id}/`,
+      `/groups/id/${encodeURIComponent(group_id)}/assignments/id/${id}/`,
       opts,
     );
   }
@@ -308,7 +308,7 @@ export default class NetsBloxApi {
 
   async viewSubmission(group_id: GroupId, assignment_id: AssignmentId, id: SubmissionId): Promise<Submission> {
     return await this.fetchJson(
-      `groups/id/${encodeURIComponent(group_id)}/assignments/id/${encodeURIComponent(assignment_id)}/submissions/id/${encodeURIComponent(id)}/`,
+      `/groups/id/${encodeURIComponent(group_id)}/assignments/id/${encodeURIComponent(assignment_id)}/submissions/id/${encodeURIComponent(id)}/`,
     );
   }
 
@@ -337,7 +337,7 @@ export default class NetsBloxApi {
     id: SubmissionId,
   ): Promise<string> {
     return await this.fetchJson(
-      `groups/id/${encodeURIComponent(group_id)}/assignments/id/${encodeURIComponent(assignment_id)}/submissions/id/${encodeURIComponent(id)}/xml/`,
+      `/groups/id/${encodeURIComponent(group_id)}/assignments/id/${encodeURIComponent(assignment_id)}/submissions/id/${encodeURIComponent(id)}/xml/`,
     );
   }
 
@@ -348,7 +348,7 @@ export default class NetsBloxApi {
   ): Promise<Submission> {
     const opts = { method: "delete" };
     return await this.fetchJson(
-      `groups/id/${encodeURIComponent(group_id)}/assignments/id/${encodeURIComponent(assignment_id)}/submissions/id/${encodeURIComponent(id)}/`,
+      `/groups/id/${encodeURIComponent(group_id)}/assignments/id/${encodeURIComponent(assignment_id)}/submissions/id/${encodeURIComponent(id)}/`,
       opts,
     );
   }
