@@ -696,6 +696,13 @@ export default class Cloud {
     return await response.json();
   }
 
+  async viewSubmissionXml( group_id, assignment_id, id) {
+    const response = await this.fetch(
+      `/groups/id/${encodeURIComponent(group_id)}/assignments/id/${encodeURIComponent(assignment_id)}/submissions/id/${encodeURIComponent(id)}/xml/`,
+    );
+    return await response.text();
+  }
+
   // Cloud: user messages (to be overridden)
 
   message(string) {
