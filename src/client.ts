@@ -682,6 +682,11 @@ export default class Cloud {
     await this.post(`/libraries/user/${this.username}/${name}/unpublish`);
   }
 
+  async listGroupAssignments() {
+    const response = await this.fetch( `/groups/id/${encodeURIComponent(this.groupId)}/assignments/`, );
+    return await response.json();
+  }
+
   async saveSubmission(assignmentId, xml) {
     const body = { owner: this.username, xml: xml };
     const response = await this.post(

@@ -336,7 +336,7 @@ export default class NetsBloxApi {
     assignment_id: AssignmentId,
     id: SubmissionId,
   ): Promise<string> {
-    return await this.fetchJson(
+    return await this.fetchText(
       `/groups/id/${encodeURIComponent(group_id)}/assignments/id/${encodeURIComponent(assignment_id)}/submissions/id/${encodeURIComponent(id)}/xml/`,
     );
   }
