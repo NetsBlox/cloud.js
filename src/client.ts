@@ -55,7 +55,7 @@ export default class Cloud {
   token: string | null;
   api: NetsBloxApi;
 
-  constructor(url, clientId, username, groupId, localize = defaultLocalizer) {
+  constructor(url, clientId, username, localize = defaultLocalizer, groupId=null) {
     this.clientId = clientId;
     this.username = username;
     this.projectId = null;
