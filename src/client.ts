@@ -55,17 +55,16 @@ export default class Cloud {
   token: string | null;
   api: NetsBloxApi;
 
-  constructor(url, clientId, username, localize = defaultLocalizer) {
+  constructor(url, clientId, username, groupId, localize = defaultLocalizer) {
     this.clientId = clientId;
     this.username = username;
     this.projectId = null;
     this.roleId = null;
-    this.groupId = null;
+    this.groupId = groupId;
     this.url = url;
     this.token = null; // only needed in NodeJs
     this.localize = localize;
     this.api = new NetsBloxApi(this.url);
-    if (username) this.viewUser(username).then((res) => {this.groupId = res.groupId}) // Load groupId asynchronously
 }
 
   clear() {
