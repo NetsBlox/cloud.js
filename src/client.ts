@@ -49,24 +49,27 @@ export default class Cloud {
   username: string;
   projectId: string | null;
   roleId: string | null;
+  groupId: string | null;
   newProjectRequest: Promise<any> | undefined;
   localize: (text: string) => string;
   token: string | null;
   api: NetsBloxApi;
 
-  constructor(url, clientId, username, localize = defaultLocalizer) {
+  constructor(url, clientId, username, groupId, localize = defaultLocalizer) {
     this.clientId = clientId;
     this.username = username;
     this.projectId = null;
     this.roleId = null;
+    this.groupId = groupId;
     this.url = url;
     this.token = null; // only needed in NodeJs
     this.localize = localize;
     this.api = new NetsBloxApi(this.url);
-  }
+}
 
   clear() {
     this.username = null;
+    this.groupId = null;
     this.token = null;
   }
 
@@ -96,6 +99,7 @@ export default class Cloud {
     const response = await this.post("/users/login", body);
     const user = await response.json();
     this.username = user.username;
+    this.groupId = user.groupId;
     if (isNodeJs) {
       const cookie = response.headers.get("set-cookie");
       if (!cookie) throw new CloudError("No cookie received");
@@ -675,6 +679,27 @@ export default class Cloud {
   async unpublishLibrary(name) {
     name = encodeURIComponent(name);
     await this.post(`/libraries/user/${this.username}/${name}/unpublish`);
+  }
+
+  async listGroupAssignments() {
+    const response = await this.fetch( `/groups/id/${encodeURIComponent(this.groupId)}/assignments/`, );
+    return await response.json();
+  }
+
+  async saveSubmission(assignmentId, xml) {
+    const body = { owner: this.username, xml: xml };
+    const response = await this.post(
+      `/groups/id/${encodeURIComponent(this.groupId)}/assignments/id/${encodeURIComponent(assignmentId)}/submissions/`,
+      body,
+    );
+    return await response.json();
+  }
+
+  async viewSubmissionXml( group_id, assignment_id, id) {
+    const response = await this.fetch(
+      `/groups/id/${encodeURIComponent(group_id)}/assignments/id/${encodeURIComponent(assignment_id)}/submissions/id/${encodeURIComponent(id)}/xml/`,
+    );
+    return await response.text();
   }
 
   // Cloud: user messages (to be overridden)
