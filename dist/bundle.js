@@ -1004,6 +1004,18 @@
             const response = await this.fetch(`/groups/id/${encodeURIComponent(group_id)}/assignments/id/${encodeURIComponent(assignment_id)}/submissions/id/${encodeURIComponent(id)}/xml/`);
             return await response.text();
         }
+        async redeemJoinCode(code) {
+            const body = { code };
+            const response = await this.post(`/users/${this.username}/memberships/`, body);
+            const user = await response.json();
+            this.groupId = user.groupId;
+            return user;
+        }
+        async leaveGroup() {
+            const response = await this.delete(`/users/${this.username}/memberships/`);
+            this.groupId = null;
+            return await response.json();
+        }
         // Cloud: user messages (to be overridden)
         message(string) {
             alert(string);
