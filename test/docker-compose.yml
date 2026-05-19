@@ -15,7 +15,8 @@ services:
 
   mongo:  # Database for users, groups, project metadata, etc
     restart: always
-    image: mongo:5.0-focal
+    image: mongo:8.2-noble
+    command: ["--replSet", "rs0", "--bind_ip_all", "--port", "27017"]
     ports:
         - "27017:27017"
 
